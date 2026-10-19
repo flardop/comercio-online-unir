@@ -1,111 +1,27 @@
-# Plataforma de compraventa de segunda mano
+# Comercio online UNIR
 
-Este repositorio contiene la base del proyecto final. La aplicación permitirá publicar, buscar y vender artículos de segunda mano. También tendrá mensajería, reportes y tres tipos de cuenta: usuario, moderador y administrador.
+Repositorio compartido para el proyecto final de una plataforma de compraventa de segunda mano.
 
-El nombre de la plataforma todavía es provisional. El equipo puede decidir más adelante el nombre, el logotipo y los colores sin cambiar la organización del código.
+## Estado actual
 
-## Qué hay en cada carpeta
+El proyecto está vacío. Solo se han creado las carpetas principales para que el equipo decida conjuntamente cómo comenzar.
 
 ```text
-frontend/   Pantallas hechas con Angular
-backend/    API hecha con Node y Express
-database/   Estructura inicial de MySQL
-docs/       Guías y acuerdos del equipo
-.github/    Plantillas para tareas y revisiones
+frontend/   Aplicación Angular
+backend/    Aplicación Node y Express
+database/   Base de datos MySQL
+docs/       Notas y acuerdos del equipo
 ```
 
-Todo está en un solo repositorio para que sea más fácil coordinar a las seis personas. Cada persona trabaja en una rama y propone sus cambios mediante una solicitud de revisión.
-
-## Antes de empezar
-
-Cada integrante necesita instalar:
-
-- Git.
-- Node.js 24.19 o una versión compatible.
-- Docker Desktop, para ejecutar MySQL sin configurarlo a mano.
-- Un editor de código, por ejemplo Visual Studio Code.
-
-## Puesta en marcha rápida
-
-1. Copia el repositorio en tu ordenador.
-2. Abre una terminal dentro de la carpeta del proyecto.
-3. Instala las dependencias:
-
-   ```bash
-   npm install
-   ```
-
-4. Crea el archivo de configuración del backend:
-
-   ```bash
-   cp backend/.env.example backend/.env
-   ```
-
-5. Arranca la base de datos:
-
-   ```bash
-   npm run db:up
-   ```
-
-   La primera vez, Docker tiene que descargar MySQL y puede tardar varios minutos.
-
-6. Arranca el backend en una terminal:
-
-   ```bash
-   npm run dev:backend
-   ```
-
-7. Arranca el frontend en otra terminal:
-
-   ```bash
-   npm run dev:frontend
-   ```
-
-8. Abre `http://localhost:4200` en el navegador. La API responde en `http://localhost:3000/api/health`.
-
-Si algo falla, revisa [la guía de primeros pasos](docs/PRIMEROS_PASOS.md).
+Todavía no hay pantallas, API, tablas ni funcionalidades desarrolladas.
 
 ## Forma de trabajar
 
-No se trabaja directamente en `main`. Para cada tarea:
+1. Elegir una tarea.
+2. Crear una rama nueva desde `main`.
+3. Trabajar únicamente en esa rama.
+4. Subir los cambios.
+5. Abrir una pull request para que otra persona los revise.
 
-1. Actualiza tu copia de `main`.
-2. Crea una rama con un nombre corto, por ejemplo `frontend/login`.
-3. Haz solo los cambios de esa tarea.
-4. Comprueba el proyecto con `npm run check`.
-5. Sube la rama y abre una solicitud de revisión.
-6. Otra persona revisa el cambio antes de unirlo a `main`.
-
-Las instrucciones completas están en [CONTRIBUTING.md](CONTRIBUTING.md). El reparto inicial está en [docs/REPARTO_TRABAJO.md](docs/REPARTO_TRABAJO.md).
-
-## Funciones obligatorias
-
-- Registro e inicio de sesión.
-- Perfiles de usuario, moderador y administrador.
-- Publicación, edición, búsqueda y venta de artículos.
-- Estados del artículo: borrador, publicado, en revisión, retirado y vendido.
-- Mensajería privada entre comprador y vendedor.
-- Reportes y moderación.
-- Gestión de usuarios, roles y categorías.
-- Estadísticas básicas para administración.
-
-Las valoraciones, favoritos, avisos en tiempo real y mapa son mejoras opcionales. Primero deben terminarse las funciones obligatorias.
-
-## Comandos útiles
-
-| Comando | Para qué sirve |
-| --- | --- |
-| `npm run dev:frontend` | Arranca Angular |
-| `npm run dev:backend` | Arranca la API |
-| `npm run db:up` | Arranca MySQL |
-| `npm run db:down` | Detiene MySQL |
-| `npm run check` | Comprueba frontend y backend |
-| `npm run build` | Genera una versión lista para entregar |
-
-## Seguridad básica
-
-- Nunca subas el archivo `.env`.
-- Nunca guardes contraseñas reales en el código.
-- Las contraseñas de usuarios deberán guardarse cifradas con un algoritmo específico para contraseñas.
-- La localización mostrada al público debe ser aproximada.
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para ver los comandos básicos y [docs/REPARTO_TRABAJO.md](docs/REPARTO_TRABAJO.md) para organizar al equipo.
 
