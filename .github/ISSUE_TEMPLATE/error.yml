@@ -1,0 +1,25 @@
+name: Error
+description: Algo no funciona como debería
+title: "[Error] "
+labels: ["error"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qué ocurre
+      description: Explica el problema y qué esperabas que ocurriera.
+    validations:
+      required: true
+  - type: textarea
+    id: repetir
+    attributes:
+      label: Pasos para repetir el error
+      placeholder: "1. Abrir...\n2. Pulsar...\n3. Ver el error..."
+    validations:
+      required: true
+  - type: textarea
+    id: pruebas
+    attributes:
+      label: Información útil
+      description: Añade mensajes de error, capturas o datos de prueba sin información privada.
+
