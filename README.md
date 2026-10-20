@@ -18,7 +18,7 @@ Todavía no hay pantallas, API, tablas ni funcionalidades desarrolladas.
 ## Forma de trabajar
 
 1. Elegir una tarea.
-2. Crear una rama nueva desde `main`.
+2. Crear una rama nueva desde `develop`.
 3. Trabajar únicamente en esa rama.
 4. Subir los cambios.
 5. Abrir una pull request para que otra persona los revise.
