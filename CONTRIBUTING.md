@@ -1,6 +1,7 @@
 # Cómo colaborar
 
-No trabajéis directamente en `main`. Cada persona debe crear una rama para su tarea.
+No trabajéis directamente en `main`. Cada persona debe crear una rama para su tarea. Es conveniente crear la rama desde 'develop' ya que esta rama contendrá los cambios que estén desarrollando tus compañeros
+
 
 ```bash
 git switch main
