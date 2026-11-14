@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChispApp · Actividad de usuarios</title>
+  <style>
+    :root {
+      --coral: #ff6b6b;
+      --coral-dark: #ed5148;
+      --yellow: #ffd53d;
+      --cream: #fff4e6;
+      --paper: #fffaf5;
+      --ink: #39211b;
+      --muted: #816d66;
+      --line: #f0e2d7;
+      --green: #46846e;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 88% 14%, #ffe1cf 0 12%, transparent 31%),
+        var(--paper);
+      font-family: Nunito, "Avenir Next", system-ui, sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid #f6b533;
+      outline-offset: 3px;
+    }
+
+    .topbar {
+      min-height: 76px;
+      padding: 14px clamp(20px, 5vw, 72px);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: #fffdfb;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .spark {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--coral);
+      border-radius: 13px;
+      box-shadow: 0 4px 0 #d85751;
+      transform: rotate(-9deg);
+    }
+
+    .spark span { transform: rotate(9deg); }
+    .brand-app { color: var(--coral-dark); }
+
+    .search {
+      width: min(450px, 42vw);
+      margin-left: 16px;
+      padding: 11px 17px;
+      border: 1.5px solid #e9d8ca;
+      border-radius: 24px;
+      background: white;
+      color: var(--muted);
+    }
+
+    .user-menu {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+    }
+
+    .mini-avatar,
+    .avatar {
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-weight: 900;
+    }
+
+    .mini-avatar {
+      width: 42px;
+      height: 42px;
+      color: #9b3e32;
+      background: #ffe2c7;
+    }
+
+    main {
+      width: min(1160px, calc(100% - 40px));
+      margin: 34px auto 56px;
+    }
+
+    .demo-note {
+      width: fit-content;
+      margin-bottom: 16px;
+      padding: 7px 12px;
+      color: #86501d;
+      background: #fff0d4;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .welcome {
+      position: relative;
+      overflow: hidden;
+      min-height: 255px;
+      padding: clamp(28px, 5vw, 58px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
+      align-items: center;
+      gap: 30px;
+      background: linear-gradient(125deg, var(--cream), #fff9ef 70%);
+      border: 1px solid #ffe0c4;
+      border-radius: 30px;
+    }
+
+    .welcome::after {
+      content: "⚡";
+      position: absolute;
+      right: 3%;
+      top: -44px;
+      color: rgba(255, 213, 61, .52);
+      font-size: 235px;
+      line-height: 1;
+      transform: rotate(8deg);
+      pointer-events: none;
+    }
+
+    .welcome-copy,
+    .session { position: relative; z-index: 1; }
+
+    h1 {
+      max-width: 680px;
+      margin: 0 0 14px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.02;
+      letter-spacing: -2.4px;
+    }
+
+    .welcome p {
+      max-width: 650px;
+      margin: 0;
+      color: #71584d;
+      font-size: 17px;
+    }
+
+    .session {
+      padding: 20px;
+      background: rgba(255, 255, 255, .86);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .session strong,
+    .session span { display: block; }
+    .session strong { margin-bottom: 5px; font-size: 18px; }
+    .session span { color: var(--muted); font-size: 13px; }
+
+    .session-state {
+      width: fit-content;
+      margin-top: 14px;
+      padding: 5px 9px;
+      color: #327456 !important;
+      background: #e3f2e7;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+
+    .section-head {
+      margin: 34px 0 15px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    h2 {
+      margin: 0 0 4px;
+      font-size: clamp(25px, 3vw, 34px);
+      letter-spacing: -1px;
+    }
+
+    .section-head p { margin: 0; color: var(--muted); }
+
+    .random-button {
+      flex: 0 0 auto;
+      padding: 11px 18px;
+      color: white;
+      background: var(--coral);
+      border: 0;
+      border-radius: 999px;
+      box-shadow: 0 4px 0 #d85751;
+      font-weight: 900;
+    }
+
+    .random-button:hover { background: var(--coral-dark); }
+
+    .activity-board {
+      overflow: hidden;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 15px 36px rgba(82, 40, 23, .08);
+    }
+
+    .activity-row {
+      min-height: 108px;
+      padding: 20px 23px;
+      display: grid;
+      grid-template-columns: 58px minmax(140px, .8fr) minmax(250px, 1.6fr) auto;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .activity-row:last-child { border-bottom: 0; }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      color: var(--avatar-ink);
+      background: var(--avatar-bg);
+      font-size: 18px;
+    }
+
+    .person strong { display: block; font-size: 16px; }
+    .person span { color: var(--muted); font-size: 12px; }
+
+    .action {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #57413a;
+    }
+
+    .action-icon {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      background: #fff4e8;
+      border-radius: 14px;
+      font-size: 22px;
+    }
+
+    .action strong { color: var(--ink); }
+
+    .status {
+      padding: 6px 10px;
+      color: var(--green);
+      background: #e4f3e6;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .footer-note {
+      margin: 18px 2px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 780px) {
+      .topbar { flex-wrap: wrap; gap: 12px; }
+      .search { width: 100%; margin: 0; order: 3; }
+      .user-menu span { display: none; }
+      main { width: min(100% - 24px, 1160px); margin-top: 20px; }
+      .welcome { grid-template-columns: 1fr; padding: 28px; }
+      .welcome::after { right: -45px; top: -15px; font-size: 170px; }
+      .session { max-width: 340px; }
+      .section-head { align-items: stretch; flex-direction: column; }
+      .random-button { width: 100%; }
+      .activity-row {
+        grid-template-columns: 52px 1fr auto;
+        gap: 12px;
+        padding: 17px;
+      }
+      .action { grid-column: 2 / -1; }
+      .status { grid-column: 3; grid-row: 1; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .activity-row.changed { animation: update .32s ease-out; }
+      @keyframes update {
+        from { background: #fff1d6; transform: translateX(5px); }
+        to { background: white; transform: translateX(0); }
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" aria-label="ChispApp">
+      <span class="spark" aria-hidden="true"><span>✦</span></span>
+      Chisp<span class="brand-app">App</span>
+    </div>
+    <div class="search" aria-hidden="true">🔎 Buscar artículos de segunda mano</div>
+    <div class="user-menu">
+      <span>Joel Rivera</span>
+      <div class="mini-avatar" aria-hidden="true">JR</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="demo-note">Vista de demostración · sin datos reales</div>
+
+    <section class="welcome" aria-labelledby="welcome-title">
+      <div class="welcome-copy">
+        <h1 id="welcome-title">¡Hola, Joel! Ya estás dentro.</h1>
+        <p>Esta es una propuesta sencilla de cómo podría verse ChispApp después de iniciar sesión.</p>
+      </div>
+      <div class="session">
+        <strong>Sesión de demostración</strong>
+        <span>Perfil: usuario</span>
+        <span>Correo: joel@ejemplo.demo</span>
+        <span class="session-state">Activo</span>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <div>
+        <h2>Actividad de la comunidad</h2>
+        <p>Cuatro usuarios ficticios realizando acciones de ejemplo.</p>
+      </div>
+      <button class="random-button" id="randomButton" type="button">Cambiar actividades</button>
+    </div>
+
+    <section class="activity-board" id="activityBoard" aria-live="polite" aria-label="Actividad de usuarios"></section>
+
+    <p class="footer-note">
+      Prototipo complementario basado en la identidad visual compartida por el equipo. Las personas, correos y actividades son inventados.
+    </p>
+  </main>
+
+  <script>
+    const users = [
+      { name: "Laura Martín", initials: "LM", email: "laura@ejemplo.demo", bg: "#ffe2c7", ink: "#9b3e32" },
+      { name: "Diego Santos", initials: "DS", email: "diego@ejemplo.demo", bg: "#dcecf8", ink: "#315f83" },
+      { name: "Marta Ruiz", initials: "MR", email: "marta@ejemplo.demo", bg: "#e4f3e6", ink: "#327456" },
+      { name: "Álex Moreno", initials: "AM", email: "alex@ejemplo.demo", bg: "#eee4f7", ink: "#694b83" }
+    ];
+
+    const activities = [
+      { icon: "📦", verb: "ha publicado", detail: "una cámara instantánea" },
+      { icon: "❤️", verb: "ha guardado", detail: "una bicicleta en favoritos" },
+      { icon: "💬", verb: "ha enviado", detail: "un mensaje sobre una lámpara" },
+      { icon: "🤝", verb: "ha reservado", detail: "una mesa de madera" },
+      { icon: "✅", verb: "ha completado", detail: "la venta de unos auriculares" },
+      { icon: "✏️", verb: "ha actualizado", detail: "la información de su anuncio" },
+      { icon: "🔎", verb: "ha buscado", detail: "artículos de decoración" },
+      { icon: "⭐", verb: "ha valorado", detail: "una compra recibida" }
+    ];
+
+    function randomIndex(max) {
+      if (window.crypto && window.crypto.getRandomValues) {
+        const value = new Uint32Array(1);
+        window.crypto.getRandomValues(value);
+        return value[0] % max;
+      }
+      return Math.floor(Math.random() * max);
+    }
+
+    function chooseActivities() {
+      const available = [...activities];
+      return users.map(() => available.splice(randomIndex(available.length), 1)[0]);
+    }
+
+    function renderActivities(animate = false) {
+      const selected = chooseActivities();
+      const board = document.getElementById("activityBoard");
+
+      board.innerHTML = users.map((user, index) => {
+        const activity = selected[index];
+        return `
+          <article class="activity-row${animate ? " changed" : ""}">
+            <div class="avatar" style="--avatar-bg:${user.bg};--avatar-ink:${user.ink}" aria-hidden="true">${user.initials}</div>
+            <div class="person">
+              <strong>${user.name}</strong>
+              <span>${user.email}</span>
+            </div>
+            <div class="action">
+              <span class="action-icon" aria-hidden="true">${activity.icon}</span>
+              <span><strong>${activity.verb}</strong> ${activity.detail}</span>
+            </div>
+            <span class="status">Activo</span>
+          </article>`;
+      }).join("");
+    }
+
+    document.getElementById("randomButton").addEventListener("click", () => renderActivities(true));
+    renderActivities();
+  </script>
+</body>
+</html>
