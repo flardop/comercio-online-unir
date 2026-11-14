@@ -32,6 +32,7 @@
 
     button, input { font: inherit; }
     button { cursor: pointer; }
+    [hidden] { display: none !important; }
 
     button:focus-visible,
     a:focus-visible {
@@ -73,6 +74,138 @@
     .spark span { transform: rotate(9deg); }
     .brand-app { color: var(--coral-dark); }
 
+    .auth-screen {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(300px, .9fr) minmax(420px, 1.1fr);
+      background: var(--paper);
+    }
+
+    .auth-story {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(36px, 7vw, 92px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 82% 78%, #ffd8ba 0 8%, transparent 36%),
+        linear-gradient(145deg, #fff0dc, #ffe6d8);
+    }
+
+    .auth-story .brand { margin-bottom: 42px; }
+
+    .auth-story h1 {
+      max-width: 590px;
+      margin-bottom: 18px;
+    }
+
+    .auth-story p {
+      max-width: 530px;
+      margin: 0;
+      color: #71584d;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .object-line {
+      margin-top: 42px;
+      display: flex;
+      gap: 13px;
+      font-size: 33px;
+    }
+
+    .object-line span {
+      width: 62px;
+      height: 62px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, .72);
+      border-radius: 20px;
+      box-shadow: 0 10px 24px rgba(82, 40, 23, .08);
+      transform: rotate(var(--turn));
+    }
+
+    .auth-area {
+      padding: 30px;
+      display: grid;
+      place-items: center;
+    }
+
+    .auth-box {
+      width: min(470px, 100%);
+      padding: clamp(26px, 5vw, 46px);
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 27px;
+      box-shadow: 0 22px 65px rgba(117, 63, 40, .14);
+    }
+
+    .auth-box h2 { font-size: 34px; }
+    .auth-box > p { margin: 7px 0 23px; color: var(--muted); }
+
+    .field {
+      display: block;
+      margin: 15px 0;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .field input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 13px 14px;
+      color: var(--ink);
+      background: white;
+      border: 1px solid #e7d9ce;
+      border-radius: 13px;
+    }
+
+    .login-button,
+    .demo-account {
+      width: 100%;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+
+    .login-button {
+      margin-top: 7px;
+      padding: 14px 18px;
+      color: white;
+      background: var(--coral);
+      border: 0;
+      box-shadow: 0 4px 0 #d85751;
+    }
+
+    .login-button:hover { background: var(--coral-dark); }
+
+    .account-help {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .account-help strong,
+    .account-help small { display: block; }
+    .account-help small { margin: 4px 0 11px; color: var(--muted); }
+
+    .demo-account {
+      padding: 11px 14px;
+      color: var(--ink);
+      background: #fff6e9;
+      border: 1px solid #f1dfce;
+    }
+
+    .demo-account:hover { border-color: var(--coral); }
+
+    .auth-error {
+      min-height: 20px;
+      margin: 10px 0 0;
+      color: #b94338;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
     .search {
       width: min(450px, 42vw);
       margin-left: 16px;
@@ -90,6 +223,18 @@
       gap: 10px;
       font-weight: 800;
     }
+
+    .logout-button {
+      padding: 8px 12px;
+      color: var(--ink);
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .logout-button:hover { background: #fff0e6; }
 
     .mini-avatar,
     .avatar {
@@ -285,6 +430,14 @@
     }
 
     @media (max-width: 780px) {
+      .auth-screen { grid-template-columns: 1fr; }
+      .auth-story { min-height: 300px; padding: 31px 25px; }
+      .auth-story .brand { margin-bottom: 24px; }
+      .auth-story h1 { font-size: 38px; }
+      .auth-story p { font-size: 15px; }
+      .object-line { margin-top: 24px; }
+      .object-line span { width: 50px; height: 50px; font-size: 27px; }
+      .auth-area { padding: 22px 14px 40px; }
       .topbar { flex-wrap: wrap; gap: 12px; }
       .search { width: 100%; margin: 0; order: 3; }
       .user-menu span { display: none; }
@@ -313,48 +466,91 @@
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand" aria-label="ChispApp">
-      <span class="spark" aria-hidden="true"><span>✦</span></span>
-      Chisp<span class="brand-app">App</span>
-    </div>
-    <div class="search" aria-hidden="true">🔎 Buscar artículos de segunda mano</div>
-    <div class="user-menu">
-      <span>Joel Rivera</span>
-      <div class="mini-avatar" aria-hidden="true">JR</div>
-    </div>
-  </header>
-
-  <main>
-    <div class="demo-note">Vista de demostración · sin datos reales</div>
-
-    <section class="welcome" aria-labelledby="welcome-title">
-      <div class="welcome-copy">
-        <h1 id="welcome-title">¡Hola, Joel! Ya estás dentro.</h1>
-        <p>Esta es una propuesta sencilla de cómo podría verse ChispApp después de iniciar sesión.</p>
+  <section class="auth-screen" id="authScreen" aria-labelledby="loginTitle">
+    <div class="auth-story">
+      <div class="brand" aria-label="ChispApp">
+        <span class="spark" aria-hidden="true"><span>✦</span></span>
+        Chisp<span class="brand-app">App</span>
       </div>
-      <div class="session">
-        <strong>Sesión de demostración</strong>
-        <span>Perfil: usuario</span>
-        <span>Correo: joel@ejemplo.demo</span>
-        <span class="session-state">Activo</span>
+      <h1>Las cosas que ya no usas todavía pueden tener mucha vida.</h1>
+      <p>Entra para descubrir artículos, hablar con otras personas y dar una segunda oportunidad a lo que merece seguir circulando.</p>
+      <div class="object-line" aria-hidden="true">
+        <span style="--turn:-6deg">📷</span>
+        <span style="--turn:5deg">🚲</span>
+        <span style="--turn:-3deg">🪴</span>
+        <span style="--turn:7deg">🛋️</span>
       </div>
-    </section>
-
-    <div class="section-head">
-      <div>
-        <h2>Actividad de la comunidad</h2>
-        <p>Cuatro usuarios ficticios realizando acciones de ejemplo.</p>
-      </div>
-      <button class="random-button" id="randomButton" type="button">Cambiar actividades</button>
     </div>
+    <div class="auth-area">
+      <div class="auth-box">
+        <h2 id="loginTitle">Entra en ChispApp</h2>
+        <p>Acceso simulado para enseñar el recorrido del prototipo.</p>
+        <form id="loginForm">
+          <label class="field">
+            Correo electrónico
+            <input id="email" type="email" autocomplete="username" required placeholder="tu@correo.com">
+          </label>
+          <label class="field">
+            Contraseña
+            <input id="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña">
+          </label>
+          <button class="login-button" type="submit">Entrar</button>
+          <p class="auth-error" id="loginError" role="alert" aria-live="polite"></p>
+        </form>
+        <div class="account-help">
+          <strong>Cuenta de prueba</strong>
+          <small>joel@ejemplo.demo · demo1234</small>
+          <button class="demo-account" id="demoAccount" type="button">Usar cuenta de prueba</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <section class="activity-board" id="activityBoard" aria-live="polite" aria-label="Actividad de usuarios"></section>
+  <div id="appShell" hidden>
+    <header class="topbar">
+      <div class="brand" aria-label="ChispApp">
+        <span class="spark" aria-hidden="true"><span>✦</span></span>
+        Chisp<span class="brand-app">App</span>
+      </div>
+      <div class="search" aria-hidden="true">🔎 Buscar artículos de segunda mano</div>
+      <div class="user-menu">
+        <span>Joel Rivera</span>
+        <div class="mini-avatar" aria-hidden="true">JR</div>
+        <button class="logout-button" id="logoutButton" type="button">Cerrar sesión</button>
+      </div>
+    </header>
 
-    <p class="footer-note">
-      Prototipo complementario basado en la identidad visual compartida por el equipo. Las personas, correos y actividades son inventados.
-    </p>
-  </main>
+    <main>
+      <div class="demo-note">Vista de demostración · sin datos reales</div>
+
+      <section class="welcome" aria-labelledby="welcome-title">
+        <div class="welcome-copy">
+          <h1 id="welcome-title" tabindex="-1">¡Hola, Joel! Ya estás dentro.</h1>
+          <p>Esta es una propuesta sencilla de cómo podría verse ChispApp después de iniciar sesión.</p>
+        </div>
+        <div class="session">
+          <strong>Sesión de demostración</strong>
+          <span>Perfil: usuario</span>
+          <span>Correo: joel@ejemplo.demo</span>
+          <span class="session-state">Activo</span>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <div>
+          <h2>Actividad de la comunidad</h2>
+          <p>Cuatro usuarios ficticios realizando acciones de ejemplo.</p>
+        </div>
+        <button class="random-button" id="randomButton" type="button">Cambiar actividades</button>
+      </div>
+
+      <section class="activity-board" id="activityBoard" aria-live="polite" aria-label="Actividad de usuarios"></section>
+
+      <p class="footer-note">
+        Prototipo complementario basado en la identidad visual compartida por el equipo. Las personas, correos y actividades son inventados.
+      </p>
+    </main>
+  </div>
 
   <script>
     const users = [
@@ -410,6 +606,48 @@
           </article>`;
       }).join("");
     }
+
+    const authScreen = document.getElementById("authScreen");
+    const appShell = document.getElementById("appShell");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginError = document.getElementById("loginError");
+
+    document.getElementById("demoAccount").addEventListener("click", () => {
+      emailInput.value = "joel@ejemplo.demo";
+      passwordInput.value = "demo1234";
+      loginError.textContent = "Cuenta de prueba preparada.";
+      loginError.style.color = "#327456";
+      emailInput.focus();
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const validEmail = emailInput.value.trim().toLowerCase() === "joel@ejemplo.demo";
+      const validPassword = passwordInput.value === "demo1234";
+
+      if (!validEmail || !validPassword) {
+        loginError.textContent = "Usa la cuenta de prueba indicada para entrar en esta demostración.";
+        loginError.style.color = "#b94338";
+        return;
+      }
+
+      authScreen.hidden = true;
+      appShell.hidden = false;
+      renderActivities();
+      document.getElementById("welcome-title").focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "auto" });
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", () => {
+      appShell.hidden = true;
+      authScreen.hidden = false;
+      passwordInput.value = "";
+      loginError.textContent = "Sesión de demostración cerrada.";
+      loginError.style.color = "#327456";
+      window.scrollTo({ top: 0, behavior: "auto" });
+      emailInput.focus();
+    });
 
     document.getElementById("randomButton").addEventListener("click", () => renderActivities(true));
     renderActivities();
