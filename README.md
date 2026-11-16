@@ -4,7 +4,7 @@ Repositorio compartido para el proyecto final de una plataforma de compraventa d
 
 ## Estado actual
 
-El proyecto está vacío. Solo se han creado las carpetas principales para que el equipo decida conjuntamente cómo comenzar.
+El frontend ya tiene la aplicación Angular, con el proxy hacia `/api`, la cabecera y las rutas públicas. Backend y base de datos siguen sin aplicación.
 
 ```text
 frontend/   Aplicación Angular
@@ -13,7 +13,7 @@ database/   Base de datos MySQL
 docs/       Notas y acuerdos del equipo
 ```
 
-Todavía no hay pantallas, API, tablas ni funcionalidades desarrolladas.
+Para arrancar el frontend: `cd frontend`, `npm install` y `npm start`. La API todavía no está creada. El detalle está en [frontend/README.md](frontend/README.md).
 
 ## Forma de trabajar
 
