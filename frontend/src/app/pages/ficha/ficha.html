@@ -1,3 +1,28 @@
-<h1>Artículo</h1>
-<p class="lead">Ficha del artículo {{ id }}. El detalle llega con el servicio de artículos.</p>
-<a class="btn secondary" [routerLink]="['/perfiles', id]">Ver perfil</a>
+<div class="split">
+  <div class="card">
+    <div [class]="'photo ' + articulo.foto">{{ articulo.estado }}</div>
+    <div class="body">
+      <div class="row">
+        <span class="pill">{{ articulo.estado }}</span>
+        <span class="meta">{{ articulo.lugar }}</span>
+      </div>
+      <h1>{{ articulo.titulo }}</h1>
+      <p class="price">{{ articulo.precio }}</p>
+      <p>{{ articulo.descripcion }}</p>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="row">
+      <div class="avatar">{{ articulo.inicial }}</div>
+      <div>
+        <strong>{{ articulo.vendedor }}</strong>
+        <div class="meta">{{ articulo.vendedorMeta }}</div>
+      </div>
+    </div>
+    <p class="meta">Sin email ni teléfono en esta ficha.</p>
+    <div class="row">
+      <button class="btn" type="button">Escribir al vendedor</button>
+      <a class="btn secondary" [routerLink]="['/perfiles', articulo.id]">Ver perfil</a>
+    </div>
+  </div>
+</div>

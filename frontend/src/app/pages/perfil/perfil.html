@@ -1,2 +1,24 @@
-<h1>Perfil público</h1>
-<p class="lead">Perfil {{ id }}. Nombre, ciudad y artículos publicados, sin email ni teléfono.</p>
+<div class="panel">
+  <div class="row">
+    <div class="avatar">{{ persona.inicial }}</div>
+    <div>
+      <h1 class="profile-name">{{ persona.vendedor }}</h1>
+      <p class="meta">{{ persona.vendedorMeta }}. El email no se muestra.</p>
+      <span class="pill">Valoraciones: aún no hay</span>
+    </div>
+  </div>
+</div>
+<h2 class="block-top">Artículos publicados</h2>
+<div class="grid">
+  @for (articulo of articulos; track articulo.id) {
+    <a class="card" [routerLink]="['/articulos', articulo.id]">
+      <div [class]="'photo ' + articulo.foto">{{ articulo.estado }}</div>
+      <div class="body">
+        <div class="price">{{ articulo.precio }}</div>
+        <strong>{{ articulo.titulo }}</strong>
+        <div class="meta">{{ articulo.lugar }}</div>
+        <span class="pill">{{ articulo.estado }}</span>
+      </div>
+    </a>
+  }
+</div>

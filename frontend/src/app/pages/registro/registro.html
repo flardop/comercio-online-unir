@@ -1,5 +1,16 @@
 <div class="panel auth">
   <h1>Crear cuenta</h1>
-  <p class="lead">La cuenta nueva entra como usuario. El formulario de alta se integra en la rama de acceso.</p>
-  <a class="ghost" routerLink="/">Ya tengo cuenta</a>
+  <p class="lead">La cuenta nueva entra como usuario. El rol lo cambia un moderador o un administrador.</p>
+  <label for="regName">Nombre</label>
+  <input id="regName" value="Lucía Herrera">
+  <label for="regEmail">Email</label>
+  <input id="regEmail" type="email">
+  <label for="regPass">Contraseña</label>
+  <input id="regPass" type="password" value="secreto">
+  <label for="regCity">Ciudad</label>
+  <input id="regCity" value="Valencia">
+  <div class="row actions">
+    <button class="btn" type="button">Crear cuenta</button>
+    <a class="ghost" routerLink="/">Ya tengo cuenta</a>
+  </div>
 </div>

@@ -1,3 +1,49 @@
 <h1>Explorar</h1>
-<p class="lead">Artículos publicados por otras personas. El listado llega con el servicio de artículos.</p>
-<a class="btn" routerLink="/articulos/1">Abrir una ficha</a>
+<p class="lead">Artículos publicados por otras personas. Los tuyos están en En venta.</p>
+<div class="filters">
+  <div>
+    <label for="filtroTexto">Texto</label>
+    <input id="filtroTexto" placeholder="Bicicleta, sofá, cámara…">
+  </div>
+  <div>
+    <label for="filtroCategoria">Categoría</label>
+    <select id="filtroCategoria">
+      <option>Todas</option>
+      <option>Bicicletas</option>
+      <option>Hogar</option>
+      <option>Ropa</option>
+      <option>Electrónica</option>
+      <option>Fotografía</option>
+    </select>
+  </div>
+  <div>
+    <label for="filtroPrecio">Precio máximo</label>
+    <input id="filtroPrecio" value="200">
+  </div>
+  <div>
+    <label for="filtroEstado">Conservación</label>
+    <select id="filtroEstado">
+      <option>Cualquiera</option>
+      <option>Como nuevo</option>
+      <option>Buen estado</option>
+      <option>Aceptable</option>
+    </select>
+  </div>
+  <div>
+    <label for="filtroCiudad">Localización</label>
+    <input id="filtroCiudad" placeholder="Ciudad">
+  </div>
+</div>
+<div class="grid">
+  @for (articulo of articulos; track articulo.id) {
+    <a class="card" [routerLink]="['/articulos', articulo.id]">
+      <div [class]="'photo ' + articulo.foto">{{ articulo.estado }}</div>
+      <div class="body">
+        <div class="price">{{ articulo.precio }}</div>
+        <strong>{{ articulo.titulo }}</strong>
+        <div class="meta">{{ articulo.vendedor }} · {{ articulo.lugar }}</div>
+        <span class="pill">{{ articulo.estado }}</span>
+      </div>
+    </a>
+  }
+</div>

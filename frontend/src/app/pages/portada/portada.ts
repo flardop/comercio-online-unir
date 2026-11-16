@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -6,4 +6,15 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   templateUrl: './portada.html',
 })
-export class Portada {}
+export class Portada {
+  protected readonly email = signal('');
+
+  protected rellenar(correo: string): void {
+    this.email.set(correo);
+  }
+
+  protected emailDe(event: Event): string {
+    const input = event.target;
+    return input instanceof HTMLInputElement ? input.value : '';
+  }
+}

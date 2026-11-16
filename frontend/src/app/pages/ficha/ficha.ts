@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { muestraPorId } from '../muestras';
 
 @Component({
   selector: 'app-ficha',
@@ -8,5 +9,5 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 })
 export class Ficha {
   private readonly route = inject(ActivatedRoute);
-  protected readonly id = this.route.snapshot.paramMap.get('id');
+  protected readonly articulo = muestraPorId(this.route.snapshot.paramMap.get('id'));
 }
