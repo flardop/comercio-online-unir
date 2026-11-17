@@ -1,28 +1,29 @@
-<div class="split">
-  <div class="card">
-    <div [class]="'photo ' + articulo.foto">{{ articulo.estado }}</div>
-    <div class="body">
-      <div class="row">
-        <span class="pill">{{ articulo.estado }}</span>
-        <span class="meta">{{ articulo.lugar }}</span>
-      </div>
-      <h1>{{ articulo.titulo }}</h1>
-      <p class="price">{{ articulo.precio }}</p>
-      <p>{{ articulo.descripcion }}</p>
-    </div>
-  </div>
+<main class="container">
   <div class="panel">
-    <div class="row">
-      <div class="avatar">{{ articulo.inicial }}</div>
+    <a class="outline" routerLink="/explorar">← Volver a explorar</a>
+    <div class="detail">
+      <div class="bigImg">{{ articulo.emoji }}</div>
       <div>
-        <strong>{{ articulo.vendedor }}</strong>
-        <div class="meta">{{ articulo.vendedorMeta }}</div>
+        <span class="tag">{{ articulo.estado }}</span>
+        <h1 class="ficha-title">{{ articulo.titulo }}</h1>
+        <div class="price ficha-price">{{ articulo.precio }}</div>
+        <p class="muted">⌖ {{ articulo.lugar }}</p>
+        <hr>
+        <h3>Descripción</h3>
+        <p>{{ articulo.descripcion }}</p>
+        <div class="flex">
+          <span class="avatar">{{ articulo.inicial }}</span>
+          <div>
+            <strong>{{ articulo.vendedor }}</strong>
+            <div class="meta">{{ articulo.vendedorMeta }}</div>
+          </div>
+        </div>
+        <p class="note">Sin email ni teléfono en esta ficha.</p>
+        <div class="flex">
+          <button class="primary" type="button">💬 Contactar</button>
+          <a class="secondary" [routerLink]="['/perfiles', articulo.id]">Ver perfil</a>
+        </div>
       </div>
     </div>
-    <p class="meta">Sin email ni teléfono en esta ficha.</p>
-    <div class="row">
-      <button class="btn" type="button">Escribir al vendedor</button>
-      <a class="btn secondary" [routerLink]="['/perfiles', articulo.id]">Ver perfil</a>
-    </div>
   </div>
-</div>
+</main>

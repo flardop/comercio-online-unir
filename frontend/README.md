@@ -14,7 +14,7 @@ Abre http://localhost:4200.
 
 ## Proxy
 
-`npm start` lee `proxy.conf.json`. Cualquier petición a `/api` se reenvía a `http://localhost:3000`.
+`npm start` arranca una API de demo en el puerto 3000 y la aplicación en el 4200. `proxy.conf.json` reenvía `/api` a esa API.
 
 Con la API en marcha, esta llamada sale por el proxy:
 
@@ -29,6 +29,7 @@ curl http://localhost:4200/api/categorias
 | `/` | Portada |
 | `/registro` | Alta |
 | `/explorar` | Listado |
+| `/demo` | Endpoints de la demo |
 | `/articulos/:id` | Ficha |
 | `/perfiles/:id` | Perfil público |
 

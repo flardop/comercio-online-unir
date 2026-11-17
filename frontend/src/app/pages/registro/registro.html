@@ -1,16 +1,22 @@
-<div class="panel auth">
-  <h1>Crear cuenta</h1>
-  <p class="lead">La cuenta nueva entra como usuario. El rol lo cambia un moderador o un administrador.</p>
-  <label for="regName">Nombre</label>
-  <input id="regName" value="Lucía Herrera">
-  <label for="regEmail">Email</label>
-  <input id="regEmail" type="email">
-  <label for="regPass">Contraseña</label>
-  <input id="regPass" type="password" value="secreto">
-  <label for="regCity">Ciudad</label>
-  <input id="regCity" value="Valencia">
-  <div class="row actions">
-    <button class="btn" type="button">Crear cuenta</button>
-    <a class="ghost" routerLink="/">Ya tengo cuenta</a>
+<section class="authScreen">
+  <div class="authIntro">
+    <div class="brand"><span class="spark"><span>✦</span></span>Chisp<span class="brandApp">App</span></div>
+    <div>
+      <span class="eyebrow">✨ ÚNETE A CHISPAPP</span>
+      <h1>¡Que salte la <span class="highlight">chispa!</span></h1>
+      <p>La cuenta nueva entra como usuario. El rol lo cambia un moderador o un administrador.</p>
+    </div>
   </div>
-</div>
+  <div class="authRight">
+    <div class="authBox">
+      <span class="tag">✦ Únete a ChispApp</span>
+      <h2>Crea tu cuenta</h2>
+      <label class="field"><span>Nombre</span><input id="regName" value="Lucía Herrera"></label>
+      <label class="field"><span>Correo electrónico</span><input id="regEmail" type="email" placeholder="tu@email.com"></label>
+      <label class="field"><span>Contraseña</span><input id="regPass" type="password" value="secreto"></label>
+      <label class="field"><span>Ciudad</span><input id="regCity" value="Valencia"></label>
+      <button class="primary" type="button">Crear mi cuenta ✨</button>
+      <p class="authSwitch">¿Ya tienes cuenta? <a routerLink="/">Inicia sesión</a></p>
+    </div>
+  </div>
+</section>

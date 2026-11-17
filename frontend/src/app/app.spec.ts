@@ -23,6 +23,6 @@ describe('App', () => {
     await router.navigateByUrl('/');
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Compra y vende');
+    expect(fixture.nativeElement.textContent).toContain('La chispa está donde');
   });
 });

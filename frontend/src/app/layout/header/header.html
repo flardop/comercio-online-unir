@@ -1,9 +1,20 @@
 @if (visible()) {
-  <header class="appbar">
-    <a class="logo" routerLink="/">Reusa</a>
-    <nav>
-      <a routerLink="/explorar" routerLinkActive="on">Explorar</a>
-    </nav>
-    <a class="btn secondary session" routerLink="/">Salir</a>
+  <header class="header">
+    <div class="container">
+      <div class="headInner">
+        <a class="brand" routerLink="/explorar">
+          <span class="spark"><span>✦</span></span>Chisp<span class="brandApp">App</span>
+        </a>
+        <label class="searchBar">
+          ⌕
+          <input aria-label="Buscar artículos" placeholder="Buscar productos de segunda mano...">
+        </label>
+        <div class="links">
+          <a class="navBtn" routerLink="/explorar" routerLinkActive="selected">▦ Explorar</a>
+          <a class="navBtn" routerLink="/demo" routerLinkActive="selected">Endpoints</a>
+          <a class="outline" routerLink="/">Salir ↗</a>
+        </div>
+      </div>
+    </div>
   </header>
 }

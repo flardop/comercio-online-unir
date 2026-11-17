@@ -1,31 +1,15 @@
-<div class="hero">
-  <div>
-    <h1>Compra y vende lo que ya no usas.</h1>
-    <p class="lead">Para continuar hay que iniciar sesión. La cuenta decide el perfil y, con él, la ventana que se abre.</p>
-    <p class="meta">Usuario: artículos en venta, comprados y favoritos. Moderador: reportes, usuarios y roles. Administrador: usuarios, categorías y estadísticas.</p>
-  </div>
-  <div class="panel auth">
-    <h2>Entrar</h2>
-    <label for="email">Email</label>
-    <input id="email" type="email" name="email" [value]="email()" (input)="rellenar(emailDe($event))">
-    <label for="pass">Contraseña</label>
-    <input id="pass" type="password" name="password">
-    <div class="row actions">
-      <button class="btn" type="button">Iniciar sesión</button>
-      <a class="ghost" routerLink="/registro">Crear cuenta</a>
+<section class="authScreen welcome">
+  <div class="authIntro">
+    <div class="brand"><span class="spark"><span>✦</span></span>Chisp<span class="brandApp">App</span></div>
+    <div>
+      <span class="eyebrow">✨ SEGUNDA MANO, NUEVAS HISTORIAS</span>
+      <h1>La chispa está donde <span class="highlight">menos te lo esperas.</span></h1>
+      <p>Entra para descubrir, vender y dar una segunda vida a cosas increíbles.</p>
+      <span class="flex">
+        <a class="primary" routerLink="/explorar">Entrar</a>
+        <a class="secondary" routerLink="/demo">Endpoints</a>
+      </span>
     </div>
-    <p class="meta actions">Cuentas de prueba. La contraseña es 1234.</p>
-    <button class="account" type="button" (click)="rellenar('lucia@correo.com')">
-      <span><strong>Lucía Herrera</strong><br><span class="meta">lucia@correo.com · usuario</span></span>
-      <span class="pill">Usuario</span>
-    </button>
-    <button class="account" type="button" (click)="rellenar('andres@correo.com')">
-      <span><strong>Andrés Molina</strong><br><span class="meta">andres@correo.com · moderador</span></span>
-      <span class="pill revision">Moderador</span>
-    </button>
-    <button class="account" type="button" (click)="rellenar('nora@correo.com')">
-      <span><strong>Nora Campos</strong><br><span class="meta">nora@correo.com · administrador</span></span>
-      <span class="pill borrador">Administrador</span>
-    </button>
+    <div class="authEmojis" aria-hidden="true"><span>📷</span><span>🪴</span><span>🎧</span><span>🚲</span></div>
   </div>
-</div>
+</section>

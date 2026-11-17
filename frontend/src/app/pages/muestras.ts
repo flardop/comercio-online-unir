@@ -5,6 +5,7 @@ export interface Muestra {
   lugar: string;
   estado: string;
   foto: string;
+  emoji: string;
   vendedor: string;
   inicial: string;
   vendedorMeta: string;
@@ -19,6 +20,7 @@ export const muestras: Muestra[] = [
     lugar: 'Sevilla · Como nuevo',
     estado: 'Publicado',
     foto: 'ph-c',
+    emoji: '🧥',
     vendedor: 'Marta Ruiz',
     inicial: 'M',
     vendedorMeta: 'Vendedora · Sevilla',
@@ -31,6 +33,7 @@ export const muestras: Muestra[] = [
     lugar: 'Bilbao · Buen estado',
     estado: 'Publicado',
     foto: 'ph-f',
+    emoji: '🪵',
     vendedor: 'Nora Campos',
     inicial: 'N',
     vendedorMeta: 'Vendedora · Bilbao',
@@ -43,6 +46,7 @@ export const muestras: Muestra[] = [
     lugar: 'Madrid · Aceptable',
     estado: 'Publicado',
     foto: 'ph-b',
+    emoji: '🪑',
     vendedor: 'Andrés Molina',
     inicial: 'A',
     vendedorMeta: 'Vendedor · Madrid',
