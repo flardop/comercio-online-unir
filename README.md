@@ -13,7 +13,7 @@ database/   Base de datos MySQL
 docs/       Notas y acuerdos del equipo
 ```
 
-Para arrancar el frontend: `cd frontend`, `npm install` y `npm start`. La API todavía no está creada. El detalle está en [frontend/README.md](frontend/README.md).
+Para arrancar el frontend: `cd frontend`, `pnpm install` y `pnpm start`. La API todavía no está creada. El detalle está en [frontend/README.md](frontend/README.md).
 
 ## Forma de trabajar
 

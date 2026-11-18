@@ -180,7 +180,7 @@ const server = createServer(async (req, res) => {
 server.listen(3000, () => {
   console.log('Demo API en http://localhost:3000/api');
   const frontend = join(dirname(fileURLToPath(import.meta.url)), '..');
-  const ng = spawn('npx', ['ng', 'serve'], { cwd: frontend, stdio: 'inherit', shell: true });
+  const ng = spawn('pnpm', ['exec', 'ng', 'serve'], { cwd: frontend, stdio: 'inherit', shell: true });
   const cerrar = () => {
     server.close();
     ng.kill();
