@@ -1,0 +1,38 @@
+<main class="container page">
+  <h1 class="sectionTitle">Productos con chispa ✨</h1>
+  <div class="toolbar">
+    <select id="filtroCategoria" aria-label="Categoría">
+      <option>Todas las categorías</option>
+      <option>Bicicletas</option>
+      <option>Hogar</option>
+      <option>Ropa</option>
+      <option>Electrónica</option>
+      <option>Fotografía</option>
+    </select>
+    <select id="filtroEstado" aria-label="Conservación">
+      <option>Cualquier estado</option>
+      <option>Como nuevo</option>
+      <option>Buen estado</option>
+      <option>Aceptable</option>
+    </select>
+    <select id="filtroPrecio" aria-label="Precio máximo">
+      <option>Cualquier precio</option>
+      <option>Hasta 30 €</option>
+      <option>Hasta 100 €</option>
+      <option>Hasta 300 €</option>
+    </select>
+    <input id="filtroCiudad" aria-label="Localización" placeholder="Toda España">
+  </div>
+  <div class="cards">
+    @for (articulo of articulos; track articulo.id) {
+      <a class="item" [routerLink]="['/articulos', articulo.id]">
+        <div class="itemImage"><span class="emojiFallback">{{ articulo.emoji }}</span></div>
+        <div class="itemBody">
+          <div class="itemName">{{ articulo.titulo }}</div>
+          <div class="price">{{ articulo.precio }}</div>
+          <div class="meta">⌖ {{ articulo.lugar }}</div>
+        </div>
+      </a>
+    }
+  </div>
+</main>

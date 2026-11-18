@@ -4,7 +4,7 @@ Repositorio compartido para el proyecto final de una plataforma de compraventa d
 
 ## Estado actual
 
-El proyecto está vacío. Solo se han creado las carpetas principales para que el equipo decida conjuntamente cómo comenzar.
+El frontend ya tiene la aplicación Angular, con el proxy hacia `/api`, la cabecera y las rutas públicas. Backend y base de datos siguen sin aplicación.
 
 ```text
 frontend/   Aplicación Angular
@@ -13,12 +13,12 @@ database/   Base de datos MySQL
 docs/       Notas y acuerdos del equipo
 ```
 
-Todavía no hay pantallas, API, tablas ni funcionalidades desarrolladas.
+Para arrancar el frontend: `cd frontend`, `pnpm install` y `pnpm start`. La API todavía no está creada. El detalle está en [frontend/README.md](frontend/README.md).
 
 ## Forma de trabajar
 
 1. Elegir una tarea.
-2. Crear una rama nueva desde `main`.
+2. Crear una rama nueva desde `develop`.
 3. Trabajar únicamente en esa rama.
 4. Subir los cambios.
 5. Abrir una pull request para que otra persona los revise.
