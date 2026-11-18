@@ -14,12 +14,12 @@ Abre http://localhost:4200.
 
 ## Proxy
 
-`npm start` arranca una API de demo en el puerto 3000 y la aplicación en el 4200. `proxy.conf.json` reenvía `/api` a esa API.
+`npm start` arranca una API de demo en el puerto 3000 y la aplicación en el 4200. `proxy.conf.json` reenvía `/api` a esa API. La demo expone `GET /api/health`, `POST /api/auth/register`, `POST /api/auth/login` y `GET /api/auth/me`.
 
 Con la API en marcha, esta llamada sale por el proxy:
 
 ```bash
-curl http://localhost:4200/api/categorias
+curl http://localhost:4200/api/health
 ```
 
 ## Rutas

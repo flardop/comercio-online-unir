@@ -18,47 +18,33 @@ export class Demo {
   private token = '';
   protected readonly llamadas = signal<Llamada[]>([
     {
+      metodo: 'GET',
+      ruta: '/api/health',
+      nota: 'Comprueba que la API está en marcha.',
+    },
+    {
       metodo: 'POST',
-      ruta: '/api/auth/registro',
-      nota: 'Crea una cuenta de demo y devuelve la sesión.',
-      cuerpo: { nombre: 'Demo', email: 'demo@correo.com', password: '1234', ciudad: 'Valencia' },
+      ruta: '/api/auth/register',
+      nota: 'Crea la cuenta nueva@correo.com. Si ya existe, responde 409.',
+      cuerpo: {
+        email: 'nueva@correo.com',
+        username: 'nueva',
+        password: 'demo1234',
+        name: 'Nueva',
+        city: 'Valencia',
+      },
     },
     {
       metodo: 'POST',
       ruta: '/api/auth/login',
-      nota: 'Entra con lucia@correo.com y la contraseña 1234.',
-      cuerpo: { email: 'lucia@correo.com', password: '1234' },
+      nota: 'Entra con demo@correo.com y la contraseña demo1234.',
+      cuerpo: { email: 'demo@correo.com', password: 'demo1234' },
     },
     {
       metodo: 'GET',
       ruta: '/api/auth/me',
-      nota: 'Usa el token del login. Sin ese paso responde 401.',
+      nota: 'Usa el accessToken del login o del registro. Sin ese paso responde 401.',
       conToken: true,
-    },
-    {
-      metodo: 'GET',
-      ruta: '/api/categorias',
-      nota: 'Lista las categorías.',
-    },
-    {
-      metodo: 'GET',
-      ruta: '/api/articulos',
-      nota: 'Lista los artículos publicados.',
-    },
-    {
-      metodo: 'GET',
-      ruta: '/api/articulos?texto=abrigo&ciudad=Sevilla',
-      nota: 'El mismo listado, filtrado.',
-    },
-    {
-      metodo: 'GET',
-      ruta: '/api/articulos/1',
-      nota: 'Ficha de un artículo publicado.',
-    },
-    {
-      metodo: 'GET',
-      ruta: '/api/perfiles/1',
-      nota: 'Perfil público y sus artículos, sin email ni teléfono.',
     },
   ]);
 
@@ -74,10 +60,9 @@ export class Demo {
     const texto = await respuesta.text();
     let visible = texto;
     try {
-      visible = JSON.stringify(JSON.parse(texto), null, 2);
-      if (llamada.ruta === '/api/auth/login' && respuesta.ok) {
-        this.token = JSON.parse(texto).token ?? '';
-      }
+      const datos = JSON.parse(texto) as { accessToken?: string };
+      visible = JSON.stringify(datos, null, 2);
+      if (respuesta.ok && datos.accessToken) this.token = datos.accessToken;
     } catch {
       visible = texto;
     }

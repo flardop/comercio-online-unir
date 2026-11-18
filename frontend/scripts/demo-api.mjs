@@ -3,57 +3,41 @@ import { spawn } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const categorias = [
-  { id: 1, nombre: 'Ropa' },
-  { id: 2, nombre: 'Hogar' },
-  { id: 3, nombre: 'Electrónica' },
-];
-
 const cuentas = [
-  { id: 1, nombre: 'Lucía Herrera', email: 'lucia@correo.com', password: '1234', ciudad: 'Valencia', rol: 'usuario' },
-  { id: 2, nombre: 'Andrés Molina', email: 'andres@correo.com', password: '1234', ciudad: 'Madrid', rol: 'moderador' },
-  { id: 3, nombre: 'Nora Campos', email: 'nora@correo.com', password: '1234', ciudad: 'Bilbao', rol: 'administrador' },
+  {
+    id: 1,
+    email: 'demo@correo.com',
+    username: 'demo',
+    password: 'demo1234',
+    name: 'Demo',
+    city: 'Valencia',
+    bio: null,
+    avatarUrl: null,
+    role: 'user',
+    createdAt: '2026-01-01T00:00:00.000Z',
+  },
 ];
 
-function publico(cuenta, total) {
+function usuario(cuenta) {
   return {
     id: cuenta.id,
-    nombre: cuenta.nombre,
-    ciudad: cuenta.ciudad,
-    articulosPublicados: total,
+    email: cuenta.email,
+    username: cuenta.username,
+    name: cuenta.name,
+    role: cuenta.role,
+    city: cuenta.city,
+    bio: cuenta.bio,
+    avatarUrl: cuenta.avatarUrl,
+    createdAt: cuenta.createdAt,
   };
 }
-
-function articulo(id, titulo, descripcion, precio, categoria, conservacion, ciudad, cuenta) {
-  return {
-    id,
-    titulo,
-    descripcion,
-    precio,
-    categoria,
-    conservacion,
-    ciudad,
-    estado: 'publicado',
-    vendedor: publico(cuenta, 1),
-  };
-}
-
-const articulos = [
-  articulo(1, 'Abrigo de lana', 'Abrigo de lana, talla M.', 25, categorias[0], 'como_nuevo', 'Sevilla', cuentas[0]),
-  articulo(2, 'Mesa de roble', 'Mesa de roble macizo.', 60, categorias[1], 'buen_estado', 'Bilbao', cuentas[2]),
-  articulo(3, 'Silla de escritorio', 'Silla de escritorio negra.', 40, categorias[2], 'aceptable', 'Madrid', cuentas[1]),
-];
 
 function sesion(cuenta) {
   return {
-    token: `demo-${cuenta.id}`,
-    usuario: {
-      id: cuenta.id,
-      nombre: cuenta.nombre,
-      email: cuenta.email,
-      ciudad: cuenta.ciudad,
-      rol: cuenta.rol,
-    },
+    accessToken: `demo-${cuenta.id}`,
+    tokenType: 'Bearer',
+    expiresIn: '1h',
+    user: usuario(cuenta),
   };
 }
 
@@ -87,20 +71,31 @@ function enviar(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
-function filtrar(url) {
-  return articulos.filter((item) => {
-    const texto = (url.searchParams.get('texto') ?? '').toLocaleLowerCase('es');
-    const categoriaId = Number(url.searchParams.get('categoriaId') || 0);
-    const precioMax = Number(url.searchParams.get('precioMax') || 0);
-    const conservacion = url.searchParams.get('conservacion') ?? '';
-    const ciudad = (url.searchParams.get('ciudad') ?? '').toLocaleLowerCase('es');
-    const coincideTexto = !texto || `${item.titulo} ${item.descripcion}`.toLocaleLowerCase('es').includes(texto);
-    const coincideCategoria = !categoriaId || item.categoria.id === categoriaId;
-    const coincidePrecio = !precioMax || item.precio <= precioMax;
-    const coincideEstado = !conservacion || item.conservacion === conservacion;
-    const coincideCiudad = !ciudad || item.ciudad.toLocaleLowerCase('es') === ciudad;
-    return coincideTexto && coincideCategoria && coincidePrecio && coincideEstado && coincideCiudad;
-  });
+function error(res, status, code, message, details) {
+  const body = { error: { code, message } };
+  if (details) body.error.details = details;
+  enviar(res, status, body);
+}
+
+function validarRegistro(datos) {
+  const details = [];
+  const email = String(datos?.email ?? '').trim();
+  const username = String(datos?.username ?? '').trim();
+  const password = String(datos?.password ?? '');
+  const name = String(datos?.name ?? '').trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 190) {
+    details.push({ field: 'email', message: 'Email no válido.' });
+  }
+  if (!/^[a-zA-Z0-9_.-]+$/.test(username) || username.length < 3 || username.length > 40) {
+    details.push({ field: 'username', message: 'El usuario debe tener entre 3 y 40 caracteres.' });
+  }
+  if (password.length < 8 || password.length > 72) {
+    details.push({ field: 'password', message: 'La contraseña debe tener entre 8 y 72 caracteres.' });
+  }
+  if (!name || name.length > 120) {
+    details.push({ field: 'name', message: 'El nombre es obligatorio.' });
+  }
+  return details;
 }
 
 const server = createServer(async (req, res) => {
@@ -116,24 +111,39 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', 'http://localhost:3000');
   const ruta = url.pathname;
 
-  if (req.method === 'POST' && ruta === '/api/auth/registro') {
+  if (req.method === 'GET' && ruta === '/api/health') {
+    enviar(res, 200, { status: 'ok' });
+    return;
+  }
+
+  if (req.method === 'POST' && ruta === '/api/auth/register') {
     const datos = await leerCuerpo(req);
-    if (!datos?.nombre || !datos.email || !datos.password || !datos.ciudad) {
-      enviar(res, 400, { mensaje: 'Completa los datos.' });
+    if (!datos) {
+      error(res, 400, 'VALIDATION_ERROR', 'Revisa los datos enviados.');
       return;
     }
-    const email = String(datos.email).toLowerCase();
-    if (cuentas.some((cuenta) => cuenta.email === email)) {
-      enviar(res, 409, { mensaje: 'Ese email ya está registrado.' });
+    const details = validarRegistro(datos);
+    if (details.length) {
+      error(res, 400, 'VALIDATION_ERROR', 'Revisa los datos enviados.', details);
+      return;
+    }
+    const email = String(datos.email).trim().toLowerCase();
+    const username = String(datos.username).trim();
+    if (cuentas.some((cuenta) => cuenta.email === email || cuenta.username === username)) {
+      error(res, 409, 'ACCOUNT_EXISTS', 'El email o nombre de usuario ya está registrado.');
       return;
     }
     const cuenta = {
       id: cuentas.length + 1,
-      nombre: String(datos.nombre),
       email,
+      username,
       password: String(datos.password),
-      ciudad: String(datos.ciudad),
-      rol: 'usuario',
+      name: String(datos.name).trim(),
+      city: datos.city ? String(datos.city).trim() : null,
+      bio: null,
+      avatarUrl: null,
+      role: 'user',
+      createdAt: new Date().toISOString(),
     };
     cuentas.push(cuenta);
     enviar(res, 201, sesion(cuenta));
@@ -142,10 +152,10 @@ const server = createServer(async (req, res) => {
 
   if (req.method === 'POST' && ruta === '/api/auth/login') {
     const datos = await leerCuerpo(req);
-    const email = String(datos?.email ?? '').toLowerCase();
+    const email = String(datos?.email ?? '').trim().toLowerCase();
     const cuenta = cuentas.find((item) => item.email === email && item.password === datos?.password);
     if (!cuenta) {
-      enviar(res, 401, { mensaje: 'Email o contraseña incorrectos' });
+      error(res, 401, 'INVALID_CREDENTIALS', 'Email o contraseña incorrectos.');
       return;
     }
     enviar(res, 200, sesion(cuenta));
@@ -153,51 +163,18 @@ const server = createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && ruta === '/api/auth/me') {
-    const token = String(req.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
-    const cuenta = cuentaDe(token);
+    const header = String(req.headers.authorization ?? '');
+    const [scheme, token] = header.split(' ');
+    const cuenta = scheme === 'Bearer' ? cuentaDe(token) : undefined;
     if (!cuenta) {
-      enviar(res, 401, { mensaje: 'Token no válido' });
+      error(res, 401, 'UNAUTHENTICATED', 'Se requiere Authorization: Bearer <token>.');
       return;
     }
-    const { password, ...usuario } = cuenta;
-    enviar(res, 200, usuario);
+    enviar(res, 200, { user: usuario(cuenta) });
     return;
   }
 
-  if (req.method === 'GET' && ruta === '/api/categorias') {
-    enviar(res, 200, categorias);
-    return;
-  }
-
-  if (req.method === 'GET' && ruta === '/api/articulos') {
-    enviar(res, 200, filtrar(url));
-    return;
-  }
-
-  const ficha = ruta.match(/^\/api\/articulos\/(\d+)$/);
-  if (req.method === 'GET' && ficha) {
-    const item = articulos.find((articuloItem) => articuloItem.id === Number(ficha[1]));
-    if (!item) {
-      enviar(res, 404, { mensaje: 'Artículo no encontrado' });
-      return;
-    }
-    enviar(res, 200, item);
-    return;
-  }
-
-  const perfil = ruta.match(/^\/api\/perfiles\/(\d+)$/);
-  if (req.method === 'GET' && perfil) {
-    const cuenta = cuentas.find((item) => item.id === Number(perfil[1]));
-    if (!cuenta) {
-      enviar(res, 404, { mensaje: 'Perfil no encontrado' });
-      return;
-    }
-    const suyos = articulos.filter((item) => item.vendedor.id === cuenta.id);
-    enviar(res, 200, { ...publico(cuenta, suyos.length), articulos: suyos });
-    return;
-  }
-
-  enviar(res, 404, { mensaje: 'Ruta no encontrada' });
+  error(res, 404, 'NOT_FOUND', 'Ruta no encontrada.');
 });
 
 server.listen(3000, () => {
