@@ -1,0 +1,25 @@
+<main class="container">
+  <div class="panel">
+    <div class="flex">
+      <span class="avatar large">{{ persona.inicial }}</span>
+      <div>
+        <h1 class="sectionTitle">{{ persona.vendedor }}</h1>
+        <div class="muted">{{ persona.vendedorMeta }}. El email no se muestra.</div>
+      </div>
+    </div>
+    <hr>
+    <h2 class="sectionTitle">Artículos publicados</h2>
+    <div class="cards">
+      @for (articulo of articulos; track articulo.id) {
+        <a class="item" [routerLink]="['/articulos', articulo.id]">
+          <div class="itemImage"><span class="emojiFallback">{{ articulo.emoji }}</span></div>
+          <div class="itemBody">
+            <div class="itemName">{{ articulo.titulo }}</div>
+            <div class="price">{{ articulo.precio }}</div>
+            <div class="meta">⌖ {{ articulo.lugar }}</div>
+          </div>
+        </a>
+      }
+    </div>
+  </div>
+</main>
