@@ -1,29 +1,39 @@
-<main class="container">
+<main class="container page">
   <div class="panel">
     <a class="outline" routerLink="/explorar">← Volver a explorar</a>
-    <div class="detail">
-      <div class="bigImg">{{ articulo.emoji }}</div>
-      <div>
-        <span class="tag">{{ articulo.estado }}</span>
-        <h1 class="ficha-title">{{ articulo.titulo }}</h1>
-        <div class="price ficha-price">{{ articulo.precio }}</div>
-        <p class="muted">⌖ {{ articulo.lugar }}</p>
-        <hr>
-        <h3>Descripción</h3>
-        <p>{{ articulo.descripcion }}</p>
-        <div class="flex">
-          <span class="avatar">{{ articulo.inicial }}</span>
-          <div>
-            <strong>{{ articulo.vendedor }}</strong>
-            <div class="meta">{{ articulo.vendedorMeta }}</div>
-          </div>
+    <app-estado-carga [cargando]="estado().cargando" [error]="estado().error" />
+    @if (vista(); as f) {
+      <div class="detail">
+        <div class="bigImg">
+          @if (f.foto) {
+            <img [src]="f.foto" [alt]="f.titulo" (error)="marcarFotoFallida()">
+          } @else {
+            <span class="emojiFallback">{{ f.emoji }}</span>
+          }
         </div>
-        <p class="note">Sin email ni teléfono en esta ficha.</p>
-        <div class="flex">
-          <button class="primary" type="button">💬 Contactar</button>
-          <a class="secondary" [routerLink]="['/perfiles', articulo.id]">Ver perfil</a>
+        <div>
+          <span class="tag">{{ f.condicion }}</span> <span class="tag green">{{ f.estado }}</span>
+          <h1 class="ficha-title">{{ f.titulo }}</h1>
+          <div class="price ficha-price">{{ f.precio }}</div>
+          <p class="muted">⌖ {{ f.ciudad }} · {{ f.categoria }}</p>
+          <hr>
+          <h3>Descripción</h3>
+          <p style="line-height: 1.8">{{ f.descripcion }}</p>
+          <div class="flex" style="margin: 24px 0">
+            <span class="avatar">{{ f.inicial }}</span>
+            <div>
+              <strong>{{ f.vendedor }}</strong>
+              <div class="meta">{{ f.valoracion }}</div>
+            </div>
+          </div>
+          <div class="flex">
+            <button class="primary" type="button" disabled title="Disponible próximamente">💬 Contactar</button>
+            <button class="secondary" type="button" disabled title="Disponible próximamente">♡ Favoritos</button>
+            <button class="outline" type="button" disabled title="Disponible próximamente">Reportar</button>
+          </div>
+          <p class="note" style="margin-top: 22px">📍 Ubicación aproximada: {{ f.ciudad }}. El mapa será opcional en la versión final.</p>
         </div>
       </div>
-    </div>
+    }
   </div>
 </main>
