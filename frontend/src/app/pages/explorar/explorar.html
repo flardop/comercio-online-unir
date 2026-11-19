@@ -1,38 +1,89 @@
 <main class="container page">
-  <h1 class="sectionTitle">Productos con chispa ✨</h1>
+  <div class="hero">
+    <div>
+      <span class="eyebrow">✦ UN MUNDO DE SEGUNDAS OPORTUNIDADES</span>
+      <h1><span class="highlight">La chispa está donde menos te lo esperas.</span></h1>
+      <p>Compra, vende y descubre productos de segunda mano. ¡Tu próximo flechazo puede estar a un clic!</p>
+      <div class="heroActions">
+        <button class="primary" type="button" (click)="irAProductos(productos)">⌕ Explorar productos</button>
+        <button class="primary yellow" type="button" disabled title="Disponible próximamente">♢ Vender ahora</button>
+      </div>
+    </div>
+    <div class="heroArt" aria-hidden="true">
+      <div class="scene">
+        <span class="plant">🪴</span><span class="sofa">🛋️</span><span class="bike">🚲</span><span class="camera">📷</span><span class="sparkle">✨</span>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sectionTitle">Explora por categorías ✦</h2>
+  <div class="categories">
+    @for (categoria of categorias(); track categoria.id) {
+      <button class="category" type="button" [class.active]="filtro().categoryId === categoria.id" (click)="fijar('categoryId', '' + categoria.id)">
+        <span class="ico">{{ icono(categoria.name) }}</span>{{ categoria.name }}
+      </button>
+    }
+  </div>
+
+  <div #productos id="explorar" class="sectionHead">
+    <h2 class="sectionTitle">Productos con chispa ✨</h2>
+    <button class="outline verTodos" type="button" (click)="limpiar()">Ver todos →</button>
+  </div>
   <div class="toolbar">
-    <select id="filtroCategoria" aria-label="Categoría">
-      <option>Todas las categorías</option>
-      <option>Bicicletas</option>
-      <option>Hogar</option>
-      <option>Ropa</option>
-      <option>Electrónica</option>
-      <option>Fotografía</option>
+    <select #selCategoria aria-label="Categoría" (change)="fijar('categoryId', selCategoria.value)">
+      <option value="" [selected]="filtro().categoryId === undefined">Todas las categorías</option>
+      @for (c of categorias(); track c.id) {
+        <option [value]="c.id" [selected]="filtro().categoryId === c.id">{{ c.name }}</option>
+      }
     </select>
-    <select id="filtroEstado" aria-label="Conservación">
-      <option>Cualquier estado</option>
-      <option>Como nuevo</option>
-      <option>Buen estado</option>
-      <option>Aceptable</option>
+    <select #selCondicion aria-label="Conservación" (change)="fijar('condition', selCondicion.value)">
+      <option value="" [selected]="filtro().condition === undefined">Cualquier estado</option>
+      @for (c of condiciones; track c) {
+        <option [value]="c" [selected]="filtro().condition === c">{{ etiquetas[c] }}</option>
+      }
     </select>
-    <select id="filtroPrecio" aria-label="Precio máximo">
-      <option>Cualquier precio</option>
-      <option>Hasta 30 €</option>
-      <option>Hasta 100 €</option>
-      <option>Hasta 300 €</option>
+    <select #selPrecio aria-label="Precio máximo" (change)="fijar('maxPrice', selPrecio.value)">
+      <option value="" [selected]="filtro().maxPrice === undefined">Cualquier precio</option>
+      @for (p of precios; track p) {
+        <option [value]="p" [selected]="filtro().maxPrice === p">Hasta {{ p }} €</option>
+      }
     </select>
-    <input id="filtroCiudad" aria-label="Localización" placeholder="Toda España">
+    <select #selCiudad aria-label="Ubicación" (change)="fijar('city', selCiudad.value)">
+      <option value="" [selected]="filtro().city === undefined">Toda España</option>
+      @for (c of ciudades; track c) {
+        <option [value]="c" [selected]="filtro().city === c">{{ c }}</option>
+      }
+    </select>
+    <span class="resultsCount">{{ total() }} artículos</span>
   </div>
   <div class="cards">
-    @for (articulo of articulos; track articulo.id) {
-      <a class="item" [routerLink]="['/articulos', articulo.id]">
-        <div class="itemImage"><span class="emojiFallback">{{ articulo.emoji }}</span></div>
-        <div class="itemBody">
-          <div class="itemName">{{ articulo.titulo }}</div>
-          <div class="price">{{ articulo.precio }}</div>
-          <div class="meta">⌖ {{ articulo.lugar }}</div>
-        </div>
-      </a>
+    @for (articulo of articulos(); track articulo.id) {
+      <app-articulo-card [article]="articulo" [emoji]="emojiDe(articulo)" />
     }
+    <app-estado-carga
+      [cargando]="estado().cargando"
+      [error]="estado().error"
+      [vacio]="vacio()"
+      mensajeVacio="Todavía no hay artículos para esos filtros. Prueba otra búsqueda ✨"
+    />
+  </div>
+
+  <div class="bottomInfo">
+    <div>
+      <h2 class="sectionTitle">Así de fácil funciona ⚡</h2>
+      <div class="infoPanel steps">
+        <div class="step"><div class="stepIcon">📦</div><div><strong>1. Publica</strong><span>Sube tu producto en unos pasos.</span></div></div>
+        <div class="step"><div class="stepIcon">🔎</div><div><strong>2. Descubre</strong><span>Explora y encuentra lo que te gusta.</span></div></div>
+        <div class="step"><div class="stepIcon">💬</div><div><strong>3. Conecta</strong><span>Habla sin compartir tus datos.</span></div></div>
+      </div>
+    </div>
+    <div>
+      <h2 class="sectionTitle">¿Por qué ChispApp? 💛</h2>
+      <div class="infoPanel reasons">
+        <div class="reason"><span>🫶</span>Una comunidad cercana</div>
+        <div class="reason"><span>⚡</span>Fácil de usar</div>
+        <div class="reason"><span>🌱</span>Una segunda vida</div>
+      </div>
+    </div>
   </div>
 </main>
