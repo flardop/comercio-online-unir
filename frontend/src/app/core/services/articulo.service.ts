@@ -8,6 +8,8 @@ import { MOCK_DELAY_MS } from './mock-delay';
 
 /**
  * Contrato: GET /articles y GET /articles/{articleId}.
+ * GET /articles/{id} responde `{ article: Article }`; este servicio ya devuelve el artículo desenvuelto
+ * (como UsuarioService con `{ user }`), así que al cambiar a HttpClient hay que hacer `map(r => r.article)`.
  * Hoy responde con datos de prueba; al conectar la API solo cambia el cuerpo de cada método por HttpClient.
  */
 @Injectable({ providedIn: 'root' })

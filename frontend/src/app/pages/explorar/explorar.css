@@ -11,7 +11,7 @@
 .scene .camera { font-size: 70px; left: 20%; bottom: -4px; }
 .scene .sparkle { font-size: 65px; right: 15%; top: 0; }
 .heroActions { display: flex; gap: 11px; flex-wrap: wrap; }
-.heroActions button:disabled { cursor: not-allowed; opacity: 0.6; }
+.heroActions button:disabled { cursor: not-allowed; opacity: 0.48; }
 .categories { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
 .category { border: 1px solid #ffe0bc; border-radius: 18px; background: linear-gradient(150deg, #fff3d7, #fffaf1); padding: 13px 7px; display: flex; align-items: center; justify-content: center; gap: 7px; font-weight: 900; min-height: 58px; }
 .category:hover, .category.active { background: #ffde93; border-color: #ffbe71; }

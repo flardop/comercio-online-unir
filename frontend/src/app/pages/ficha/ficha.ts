@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { catchError, forkJoin, map, of, startWith, switchMap } from 'rxjs';
+import { catchError, forkJoin, map, of, startWith, switchMap, tap } from 'rxjs';
 import { Article } from '../../core/models/article';
 import { Category } from '../../core/models/category';
 import { PublicProfile } from '../../core/models/public-profile';
@@ -21,6 +21,8 @@ interface EstadoFicha {
 }
 
 const CARGANDO: EstadoFicha = { cargando: true, error: null, article: null, categoria: null, vendedor: null };
+
+const NO_ENCONTRADO: EstadoFicha = { ...CARGANDO, cargando: false, error: 'Artículo no encontrado.' };
 
 function estadoError(error: unknown): EstadoFicha {
   const noEncontrado = error instanceof HttpErrorResponse && error.status === 404;
@@ -50,8 +52,9 @@ export class Ficha {
   protected readonly estado = toSignal(
     this.route.paramMap.pipe(
       map((params) => Number(params.get('id'))),
+      tap(() => this.fotoFallida.set(false)),
       switchMap((id) =>
-        this.articulos.obtener(id).pipe(
+        !Number.isInteger(id) || id <= 0 ? of(NO_ENCONTRADO) : this.articulos.obtener(id).pipe(
           switchMap((article) =>
             forkJoin({
               categorias: this.categorias.listar().pipe(catchError(() => of([] as Category[]))),

@@ -54,7 +54,9 @@
         <option [value]="c" [selected]="filtro().city === c">{{ c }}</option>
       }
     </select>
-    <span class="resultsCount">{{ total() }} artículos</span>
+    @if (!estado().cargando && !estado().error) {
+      <span class="resultsCount">{{ total() }} artículos</span>
+    }
   </div>
   <div class="cards">
     @for (articulo of articulos(); track articulo.id) {

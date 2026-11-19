@@ -111,4 +111,27 @@ describe('Ficha', () => {
     expect(raiz.textContent).toContain('Cargando');
     expect(raiz.querySelector('.detail')).toBeNull();
   });
+
+  it('no consulta la API y muestra «Artículo no encontrado.» si el id no es un entero positivo', async () => {
+    const raiz = await abrir('/articulos/abc');
+    expect(obtener).not.toHaveBeenCalled();
+    expect(raiz.querySelector('[role="alert"]')?.textContent).toContain('Artículo no encontrado.');
+  });
+
+  it('vuelve a mostrar la foto al cambiar de artículo tras fallar la anterior', async () => {
+    obtener.mockImplementation((id: number) => of(ARTICLES.find((a) => a.id === id) ?? ARTICLES[0]));
+    obtenerUsuario.mockReturnValue(of(USERS[0]));
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/articulos/1', Ficha);
+    harness.detectChanges();
+    const raiz = harness.routeNativeElement as HTMLElement;
+    raiz.querySelector('.bigImg img')?.dispatchEvent(new Event('error'));
+    harness.detectChanges();
+    expect(raiz.querySelector('.bigImg img')).toBeNull();
+    expect(raiz.querySelector('.bigImg .emojiFallback')).not.toBeNull();
+    const otro = ARTICLES.find((a) => a.id !== 1 && a.images.length > 0) as (typeof ARTICLES)[number];
+    await harness.navigateByUrl(`/articulos/${otro.id}`);
+    harness.detectChanges();
+    expect(raiz.querySelector('.bigImg img')?.getAttribute('src')).toBe(otro.images[0].url);
+  });
 });

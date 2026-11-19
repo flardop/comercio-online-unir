@@ -80,12 +80,14 @@ describe('Explorar', () => {
     const { raiz } = await abrir();
     expect(raiz.textContent).toContain('Cargando');
     expect(raiz.querySelectorAll('.item').length).toBe(0);
+    expect(raiz.querySelector('.resultsCount')).toBeNull();
   });
 
   it('muestra el error si falla la consulta', async () => {
     listar.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
     const { raiz } = await abrir();
     expect(raiz.querySelector('[role="alert"]')?.textContent).toContain('No se han podido cargar los artículos');
+    expect(raiz.querySelector('.resultsCount')).toBeNull();
   });
 
   it('muestra el texto de v2 cuando no hay resultados', async () => {
