@@ -1,5 +1,17 @@
 # Backend
 
-Carpeta reservada para la aplicación Node con Express.
+API Express de acceso a la base `comercio_online`.
 
-Todavía no se ha creado la aplicación.
+## Requisitos
+
+- Node.js 20 o superior
+- pnpm
+- MySQL iniciado y configurado por el equipo
+
+## Configuración y arranque
+
+Desde `backend/`:
+
+```powershell
+pnpm install
+Copy-Item .env.example .env

@@ -145,7 +145,10 @@ export async function login(req, res) {
     [email]
   );
   const row = rows[0];
-  if (!row || !(await bcrypt.compare(input.password, row.password_hash))) {
+  if (
+  !row ||
+  typeof row.password_hash !== 'string' ||
+  !(await bcrypt.compare(input.password, row.password_hash))) {
     return errorResponse(res, 401, 'INVALID_CREDENTIALS', 'Email o contraseña incorrectos.');
   }
   if (row.estado === 'bloqueado') {
