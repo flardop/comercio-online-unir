@@ -1,28 +1,39 @@
 import db from '../config/db.js';
 
-// Obtener artículos con filtros
 const obtenerTodos = async (filtros = {}) => {
     let sql = `
-        SELECT a.*
+        SELECT
+            a.id,
+            a.vendedor_id,
+            a.categoria_id,
+            a.titulo,
+            a.descripcion,
+            a.precio,
+            a.estado_conservacion,
+            a.ciudad,
+            a.provincia,
+            a.pais,
+            a.codigo_postal,
+            a.publicado_en,
+            a.creado_en,
+            a.actualizado_en
         FROM articulos a
-        INNER JOIN usuarios u ON a.usuario_id = u.id
-        WHERE a.estado_publicacion = 'publicado'
+        WHERE a.estado_publicacion = 'activo'
     `;
 
     const params = [];
 
-    // Búsqueda por título o descripción
+    // Búsqueda de texto
     if (filtros.q) {
-        sql += ` AND (
-            a.titulo LIKE ?
-            OR a.descripcion LIKE ?
-        )`;
-
-        params.push(`%${filtros.q}%`, `%${filtros.q}%`);
+        sql += `
+            AND MATCH(a.titulo, a.descripcion)
+            AGAINST(? IN NATURAL LANGUAGE MODE)
+        `;
+        params.push(filtros.q);
     }
 
-    // Filtrar por categoría
-    if (filtros.categoryId) {
+    // Categoría
+    if (filtros.categoryId !== undefined) {
         sql += ' AND a.categoria_id = ?';
         params.push(filtros.categoryId);
     }
@@ -45,43 +56,27 @@ const obtenerTodos = async (filtros = {}) => {
         params.push(filtros.condition);
     }
 
-    // Filtrar por ciudad
+    // Ciudad
     if (filtros.city) {
-        sql += ' AND u.ciudad LIKE ?';
+        sql += ' AND a.ciudad LIKE ?';
         params.push(`%${filtros.city}%`);
     }
 
-    // Filtrar por distancia geográfica
-    if (
-        filtros.lat !== undefined &&
-        filtros.lng !== undefined &&
-        filtros.radiusKm !== undefined
-    ) {
-        sql += `
-            AND (
-                6371 * ACOS(
-                    LEAST(1, GREATEST(-1,
-                        COS(RADIANS(?)) *
-                        COS(RADIANS(u.latitud)) *
-                        COS(RADIANS(u.longitud) - RADIANS(?)) +
-                        SIN(RADIANS(?)) *
-                        SIN(RADIANS(u.latitud))
-                    ))
-                )
-            ) <= ?
-        `;
+    // Provincia
+    if (filtros.province) {
+        sql += ' AND a.provincia LIKE ?';
+        params.push(`%${filtros.province}%`);
+    }
 
-        params.push(
-            filtros.lat,
-            filtros.lng,
-            filtros.lat,
-            filtros.radiusKm
-        );
+    // País
+    if (filtros.country) {
+        sql += ' AND a.pais LIKE ?';
+        params.push(`%${filtros.country}%`);
     }
 
     // Ordenación
     const ordenesPermitidos = {
-        recent: 'a.creado_en DESC',
+        recent: 'a.publicado_en DESC',
         price_asc: 'a.precio ASC',
         price_desc: 'a.precio DESC'
     };
@@ -99,10 +94,24 @@ const obtenerTodos = async (filtros = {}) => {
 // Obtener artículo por ID
 const obtenerPorId = async (id) => {
     const [rows] = await db.execute(
-        `SELECT *
-         FROM articulos
-         WHERE id = ?
-         AND estado_publicacion = 'publicado'`,
+        `SELECT
+            a.id,
+            a.vendedor_id,
+            a.categoria_id,
+            a.titulo,
+            a.descripcion,
+            a.precio,
+            a.estado_conservacion,
+            a.ciudad,
+            a.provincia,
+            a.pais,
+            a.codigo_postal,
+            a.publicado_en,
+            a.creado_en,
+            a.actualizado_en
+        FROM articulos a
+        WHERE a.id = ?
+        AND a.estado_publicacion = 'activo'`,
         [id]
     );
 

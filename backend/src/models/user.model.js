@@ -6,14 +6,17 @@ const obtenerPorId = async (id) => {
     const [rows] = await db.execute(
         `SELECT
             id,
-            rol_id,
-            nombre,
             nombre_usuario,
-            email,
-            activo,
+            nombre_completo,
+            foto_perfil,
+            biografia,
+            ciudad,
+            provincia,
+            pais,
             creado_en
         FROM usuarios
-        WHERE id = ?`,
+        WHERE id = ?
+        AND estado = 'activo'`,
         [id]
     );
 

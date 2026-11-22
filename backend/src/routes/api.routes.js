@@ -6,8 +6,7 @@ import apiCategories from './category.router.js';
 const router = Router();
 
 //router.use('/authors', apiAuthors);
-router.use('/articles', apiArticles);
-router.use('/users', apiUsers);
-router.use('/categories', apiCategories);
+router.use('/articulos', apiArticles);
+router.use('/categorias', apiCategories);
 
 export default router;

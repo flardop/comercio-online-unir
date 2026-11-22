@@ -1,17 +1,48 @@
 import db from '../config/db.js';
 
-// Obtener categorías con filtros
-const obtenerTodas = async () => {
+const obtenerTodas = async (filtros = {}) => {
     let sql = `
         SELECT
             id,
+            categoria_padre_id,
             nombre,
-            activa
+            descripcion,
+            activa,
+            creado_en
         FROM categorias
-        WHERE 1 = 1
+        WHERE activa = TRUE
     `;
 
-    const [rows] = await db.execute(sql);
+    const params = [];
+
+    // Buscar por nombre
+    if (filtros.q) {
+        sql += ' AND nombre LIKE ?';
+        params.push(`%${filtros.q}%`);
+    }
+
+    // Filtrar por categoría padre
+    if (filtros.categoriaPadreId !== undefined) {
+        if (filtros.categoriaPadreId === null) {
+            sql += ' AND categoria_padre_id IS NULL';
+        } else {
+            sql += ' AND categoria_padre_id = ?';
+            params.push(filtros.categoriaPadreId);
+        }
+    }
+
+    // Ordenación
+    const ordenesPermitidos = {
+        name_asc: 'nombre ASC',
+        name_desc: 'nombre DESC',
+        recent: 'creado_en DESC'
+    };
+
+    const orden = ordenesPermitidos[filtros.sort] || 'nombre ASC';
+
+    sql += ` ORDER BY ${orden}`;
+
+    const [rows] = await db.execute(sql, params);
 
     return rows;
 };
@@ -22,10 +53,14 @@ const obtenerPorId = async (id) => {
     const [rows] = await db.execute(
         `SELECT
             id,
+            categoria_padre_id,
             nombre,
-            activa
+            descripcion,
+            activa,
+            creado_en
         FROM categorias
-        WHERE id = ?`,
+        WHERE id = ?
+        AND activa = TRUE`,
         [id]
     );
 
