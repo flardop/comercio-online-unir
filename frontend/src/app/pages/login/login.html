@@ -1,0 +1,72 @@
+
+<section class="authScreen">
+  <div class="authIntro">
+    <div class="brand">
+      <span class="spark"><span>✦</span></span>
+      Chisp<span class="brandApp">App</span>
+    </div>
+
+    <div>
+      <span class="eyebrow">✨ BIENVENIDO A CHISPAPP</span>
+      <h1>¡Vuelve a encender la <span class="highlight">chispa!</span></h1>
+      <p>Inicia sesión para descubrir artículos, contactar con vendedores y seguir dando una segunda vida a lo que más te gusta.</p>
+    </div>
+  </div>
+
+  <div class="authRight">
+    <div class="authBox">
+      <span class="tag">✦ Nos alegra verte de nuevo</span>
+
+      <h2>Iniciar sesión</h2>
+
+      <form [formGroup]="formulario" (ngSubmit)="iniciarSesion()">
+
+        <label class="field">
+          <span>Correo electrónico</span>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="tu@email.com"
+            autocomplete="email"
+          >
+        </label>
+
+        @if (formulario.controls.email.touched && formulario.controls.email.invalid) {
+          <p class="fieldError">Introduce un correo electrónico válido.</p>
+        }
+
+        <label class="field">
+          <span>Contraseña</span>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Tu contraseña"
+            autocomplete="current-password"
+          >
+        </label>
+
+        @if (formulario.controls.password.touched && formulario.controls.password.invalid) {
+          <p class="fieldError">Introduce tu contraseña.</p>
+        }
+
+        @if (mensajeError()) {
+          <p role="alert" class="fieldError">{{ mensajeError() }}</p>
+        }
+
+        <button
+          class="primary"
+          type="submit"
+          [disabled]="cargando()"
+        >
+          {{ cargando() ? 'Iniciando sesión...' : 'Entrar en ChispApp ✨' }}
+        </button>
+
+      </form>
+
+      <p class="authSwitch">
+        ¿Todavía no tienes cuenta?
+        <a routerLink="/registro">Regístrate aquí</a>
+      </p>
+    </div>
+  </div>
+</section>
