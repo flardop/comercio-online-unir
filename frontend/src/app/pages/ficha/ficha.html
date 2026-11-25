@@ -1,0 +1,29 @@
+<main class="container">
+  <div class="panel">
+    <a class="outline" routerLink="/explorar">← Volver a explorar</a>
+    <div class="detail">
+      <div class="bigImg">{{ articulo.emoji }}</div>
+      <div>
+        <span class="tag">{{ articulo.estado }}</span>
+        <h1 class="ficha-title">{{ articulo.titulo }}</h1>
+        <div class="price ficha-price">{{ articulo.precio }}</div>
+        <p class="muted">⌖ {{ articulo.lugar }}</p>
+        <hr>
+        <h3>Descripción</h3>
+        <p>{{ articulo.descripcion }}</p>
+        <div class="flex">
+          <span class="avatar">{{ articulo.inicial }}</span>
+          <div>
+            <strong>{{ articulo.vendedor }}</strong>
+            <div class="meta">{{ articulo.vendedorMeta }}</div>
+          </div>
+        </div>
+        <p class="note">Sin email ni teléfono en esta ficha.</p>
+        <div class="flex">
+          <button class="primary" type="button">💬 Contactar</button>
+          <a class="secondary" [routerLink]="['/perfiles', articulo.id]">Ver perfil</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

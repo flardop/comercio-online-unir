@@ -2,7 +2,7 @@
 import http from "node:http";
 import app from "./src/app.js";
 
-import pool from "./src/config/db.js";
+import {pool} from "./src/config/db.js";
 
 
 try{

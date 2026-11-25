@@ -1,4 +1,4 @@
-import db from '../config/db.js';
+import {pool} from '../config/db.js';
 
 const obtenerTodas = async (filtros = {}) => {
     let sql = `
@@ -42,7 +42,7 @@ const obtenerTodas = async (filtros = {}) => {
 
     sql += ` ORDER BY ${orden}`;
 
-    const [rows] = await db.execute(sql, params);
+    const [rows] = await pool.execute(sql, params);
 
     return rows;
 };
@@ -50,7 +50,7 @@ const obtenerTodas = async (filtros = {}) => {
 
 // Obtener categoría por ID
 const obtenerPorId = async (id) => {
-    const [rows] = await db.execute(
+    const [rows] = await pool.execute(
         `SELECT
             id,
             categoria_padre_id,

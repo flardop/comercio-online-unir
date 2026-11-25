@@ -31,6 +31,7 @@ const obtenerArticuloPorId = async (req, res) => {
         }
         res.json(articulo);
     }catch (error) {
+        console.error('Error al obtener el artículo por ID:', error);
         res.status(500).json({ error: 'Error al obtener el artículo' });
     }
 }

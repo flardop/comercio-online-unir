@@ -1,7 +1,9 @@
 {
   "name": "express-init-template",
-  "version": "2.0.0",
+  "version": "0.1.0",
+  "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.9.0",
   "description": "",
   "main": "index.js",
   "engines": {
@@ -17,11 +19,14 @@
     "template"
   ],
   "author": "Cristian Falcón García",
-  "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^5.0.0",
-    "mysql2": "^3.24.6"
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.24.6",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.0"
