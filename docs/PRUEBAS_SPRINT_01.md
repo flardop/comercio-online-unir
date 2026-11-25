@@ -14,10 +14,10 @@ Son cuentas ficticias. Las contraseñas se guardan como hashes en MySQL.
 
 ## Lista de comprobación
 
-- [ ] Cargar `database/comercio_online.sql` en una base MySQL vacía.
-- [ ] Revisar que existan los tres roles y las tres cuentas; Lucía tiene el rol de usuario, Andrés el de moderador y Nora el de administradora.
-- [ ] Iniciar sesión con cada una de las tres cuentas y comprobar que la respuesta incluya el rol esperado.
-- [ ] Iniciar sesión con una contraseña incorrecta y comprobar que la API devuelva `401`.
+- [x] Cargar `database/comercio_online.sql` en una base MySQL vacía.
+- [x] Revisar que existan los tres roles y las tres cuentas; Lucía tiene el rol de usuario, Andrés el de moderador y Nora el de administradora.
+- [x] Iniciar sesión con cada una de las tres cuentas y comprobar que la respuesta incluya el rol esperado.
+- [x] Iniciar sesión con una contraseña incorrecta y comprobar que la API devuelva `401`.
 - [ ] Consultar el listado público y comprobar que aparecen seis artículos con estado `published`.
 - [ ] Filtrar por ciudad, categoría, texto, precio máximo y estado de conservación; confirmar que los resultados cumplen cada filtro.
 - [ ] Abrir una ficha de artículo publicado y confirmar que muestra título, descripción, precio, categoría, conservación, ciudad y vendedor.
@@ -45,4 +45,33 @@ WHERE estado_publicacion = 'published'
 ORDER BY publicado_en DESC, id DESC;
 ```
 
-Esta es una lista para ejecutar durante la integración; todavía no se han ejecutado estas comprobaciones contra el MySQL del equipo.
+## Resultado local del 25 de noviembre de 2026
+
+Comprobado en una instancia MySQL 9.2 local separada, con la API de autenticación
+de `develop` (commit `10773d6`). No se ha usado la base de datos del equipo.
+
+- Importación en una base vacía y segunda carga: ambas correctas, sin duplicados.
+- Resultado: 3 cuentas, 3 roles, 5 categorías y 6 artículos publicados.
+- Login y `/api/auth/me`: `200` con los roles `user`, `moderator` y `admin`.
+- Contraseña incorrecta, sesión sin token y token inválido: `401`.
+- Registro de una cuenta ya existente: `409`.
+- Los tres hashes corresponden a las contraseñas indicadas arriba.
+- La consulta SQL del listado devuelve los seis artículos; el listado HTTP aún
+  está pendiente de integrar.
+
+## Pendiente con la API pública
+
+La rama `articleapi`, commit `d6464b2`, aún consulta estos datos que no coinciden
+con el esquema de este sprint:
+
+- Artículos: `provincia`, `pais` y `codigo_postal`.
+- Categorías: `descripcion`.
+- Perfil público: `provincia` y `pais`.
+- Busca artículos con `estado_publicacion = 'activo'`; la semilla utiliza
+  `published`, como el contrato de frontend.
+- La búsqueda `MATCH(titulo, descripcion)` necesita un índice FULLTEXT, o una
+  consulta compatible con el esquema actual.
+
+Antes de ejecutar las pruebas del listado y perfil por HTTP, hay que acordar
+estas diferencias y reunir ambas API en un único servidor. Las casillas de
+frontend y API pública siguen pendientes.
