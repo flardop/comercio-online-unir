@@ -41,8 +41,8 @@ export class Login {
       .pipe(finalize(() => this.cargando.set(false)))
       .subscribe({
         next: () => {
-          // Después de iniciar sesión volvemos a la portada
-          void this.router.navigateByUrl('/');
+          // Después de iniciar sesión accedemos al catálogo
+          void this.router.navigateByUrl('/explorar');
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 401) {
