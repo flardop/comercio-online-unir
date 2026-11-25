@@ -4,7 +4,7 @@ Repositorio compartido para el proyecto final de una plataforma de compraventa d
 
 ## Estado actual
 
-El frontend ya tiene la aplicación Angular, con el proxy hacia `/api`, la cabecera y las rutas públicas. Backend y base de datos siguen sin aplicación.
+El frontend ya tiene la aplicación Angular, con el proxy hacia `/api`, la cabecera y las rutas públicas. El backend de autenticación y el SQL están en el repositorio.
 
 ```text
 frontend/   Aplicación Angular
@@ -13,7 +13,7 @@ database/   Base de datos MySQL
 docs/       Notas y acuerdos del equipo
 ```
 
-Para arrancar el frontend: `cd frontend`, `pnpm install` y `pnpm start`. La API todavía no está creada. El detalle está en [frontend/README.md](frontend/README.md).
+Para arrancar la API: `cd backend`, `pnpm install` y `pnpm dev`, con `backend/.env` apuntando a MySQL. Para arrancar el frontend: `cd frontend`, `pnpm install` y `pnpm start`. El detalle está en [frontend/README.md](frontend/README.md) y en [backend/README.md](backend/README.md).
 
 ## Forma de trabajar
 

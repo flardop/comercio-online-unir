@@ -14,7 +14,7 @@ Abre http://localhost:4200.
 
 ## Proxy
 
-`pnpm start` arranca una API de demo en el puerto 3000 y la aplicación en el 4200. `proxy.conf.json` reenvía `/api` a esa API. La demo expone `GET /api/health`, `POST /api/auth/register`, `POST /api/auth/login` y `GET /api/auth/me`.
+`pnpm start` arranca solo la aplicación en el puerto 4200. La API real se arranca aparte, en `backend`, con `pnpm dev`, y escucha en el puerto 3000. `proxy.conf.json` reenvía `/api` a esa API. La página de endpoints llama a `GET /api/health`, `POST /api/auth/register`, `POST /api/auth/login` y `GET /api/auth/me`. El login de prueba es `lucia@correo.com` con la contraseña `Usuario2026!`.
 
 Con la API en marcha, esta llamada sale por el proxy:
 
