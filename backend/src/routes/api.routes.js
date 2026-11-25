@@ -8,5 +8,6 @@ const router = Router();
 router.use('/articles', apiArticles);
 router.use('/categories', apiCategories);
 router.use('/auth', apiAuth);
+router.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 export default router;
