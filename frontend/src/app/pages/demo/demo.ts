@@ -25,7 +25,7 @@ export class Demo {
     {
       metodo: 'POST',
       ruta: '/api/auth/register',
-      nota: 'Crea la cuenta nueva@correo.com. Si ya existe, responde 409.',
+      nota: 'Crea la cuenta nueva@correo.com en la base. Si ya existe, responde 409.',
       cuerpo: {
         email: 'nueva@correo.com',
         username: 'nueva',
@@ -37,8 +37,8 @@ export class Demo {
     {
       metodo: 'POST',
       ruta: '/api/auth/login',
-      nota: 'Entra con demo@correo.com y la contraseña demo1234.',
-      cuerpo: { email: 'demo@correo.com', password: 'demo1234' },
+      nota: 'Entra con lucia@correo.com y la contraseña Usuario2026!.',
+      cuerpo: { email: 'lucia@correo.com', password: 'Usuario2026!' },
     },
     {
       metodo: 'GET',
