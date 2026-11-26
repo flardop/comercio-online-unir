@@ -26,6 +26,10 @@ export class Registro {
     city: ['', Validators.maxLength(100)],
   });
 
+  constructor() {
+    this.formulario.valueChanges.subscribe(() => this.mensajeError.set(''));
+  }
+
   crearCuenta(): void {
     this.mensajeError.set('');
     if (this.formulario.invalid) {
@@ -52,7 +56,7 @@ export class Registro {
           if (error.status === 409) {
             this.mensajeError.set('El correo o el nombre de usuario ya está registrado.');
           } else if (error.status === 400) {
-            this.mensajeError.set('Revisa los datos. La contraseña necesita al menos 8 caracteres.');
+            this.mensajeError.set('Revisa los datos del formulario.');
           } else {
             this.mensajeError.set('No se ha podido crear la cuenta. Inténtalo de nuevo.');
           }
