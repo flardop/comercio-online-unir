@@ -6,6 +6,7 @@ import {
   AuthUser,
   LoginRequest,
   LoginResponse,
+  RegisterRequest,
   CurrentUserResponse
 } from './auth.models';
 
@@ -35,12 +36,14 @@ export class AuthService {
     return this.http.post<LoginResponse>(
       `${this.apiUrl}/login`,
       credentials
-    ).pipe(
-      tap((response) => {
-        this.accessTokenSignal.set(response.accessToken);
-        this.currentUserSignal.set(response.user);
-      })
-    );
+    ).pipe(tap((response) => this.guardarSesion(response)));
+  }
+
+  register(datos: RegisterRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
+      `${this.apiUrl}/register`,
+      datos
+    ).pipe(tap((response) => this.guardarSesion(response)));
   }
 
   // Consultamos los datos del usuario conectado
@@ -59,6 +62,11 @@ export class AuthService {
         this.currentUserSignal.set(response.user);
       })
     );
+  }
+
+  private guardarSesion(response: LoginResponse): void {
+    this.accessTokenSignal.set(response.accessToken);
+    this.currentUserSignal.set(response.user);
   }
 
   // Cerramos la sesión y limpiamos los datos del usuario

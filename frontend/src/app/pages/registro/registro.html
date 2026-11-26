@@ -11,12 +11,53 @@
     <div class="authBox">
       <span class="tag">✦ Únete a ChispApp</span>
       <h2>Crea tu cuenta</h2>
-      <label class="field"><span>Nombre</span><input id="regName" value="Lucía Herrera"></label>
-      <label class="field"><span>Correo electrónico</span><input id="regEmail" type="email" placeholder="tu@email.com"></label>
-      <label class="field"><span>Contraseña</span><input id="regPass" type="password" value="secreto"></label>
-      <label class="field"><span>Ciudad</span><input id="regCity" value="Valencia"></label>
-      <button class="primary" type="button">Crear mi cuenta ✨</button>
-      <p class="authSwitch">¿Ya tienes cuenta? <a routerLink="/">Inicia sesión</a></p>
+      <form [formGroup]="formulario" (ngSubmit)="crearCuenta()">
+        <label class="field">
+          <span>Nombre</span>
+          <input type="text" formControlName="name" autocomplete="name">
+        </label>
+        @if (formulario.controls.name.touched && formulario.controls.name.invalid) {
+          <p class="fieldError">Introduce tu nombre.</p>
+        }
+
+        <label class="field">
+          <span>Usuario</span>
+          <input type="text" formControlName="username" autocomplete="username">
+        </label>
+        @if (formulario.controls.username.touched && formulario.controls.username.invalid) {
+          <p class="fieldError">El usuario tiene entre 3 y 40 caracteres, sin espacios.</p>
+        }
+
+        <label class="field">
+          <span>Correo electrónico</span>
+          <input type="email" formControlName="email" placeholder="tu@email.com" autocomplete="email">
+        </label>
+        @if (formulario.controls.email.touched && formulario.controls.email.invalid) {
+          <p class="fieldError">Introduce un correo electrónico válido.</p>
+        }
+
+        <label class="field">
+          <span>Contraseña</span>
+          <input type="password" formControlName="password" autocomplete="new-password">
+        </label>
+        @if (formulario.controls.password.touched && formulario.controls.password.invalid) {
+          <p class="fieldError">La contraseña necesita al menos 8 caracteres.</p>
+        }
+
+        <label class="field">
+          <span>Ciudad</span>
+          <input type="text" formControlName="city" autocomplete="address-level2">
+        </label>
+
+        @if (mensajeError()) {
+          <p role="alert" class="fieldError">{{ mensajeError() }}</p>
+        }
+
+        <button class="primary" type="submit" [disabled]="cargando()">
+          {{ cargando() ? 'Creando cuenta...' : 'Crear mi cuenta ✨' }}
+        </button>
+      </form>
+      <p class="authSwitch">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
     </div>
   </div>
 </section>
