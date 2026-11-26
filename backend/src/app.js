@@ -1,18 +1,39 @@
-import express from 'express';
-import cors from 'cors';
-import { config } from './config.js';
-import { login, me, register, requireAuth } from './auth.js';
+// Creation and configuration of the Express APP
+import express from "express";
+import cors from "cors";
+import { config } from './config/config.js';
 
-export const app = express();
-const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
+import apiRoutes from "./routes/api.routes.js";
 
+const app = express();
+app.use(express.json());
 app.disable('x-powered-by');
 app.use(cors({ origin: config.FRONTEND_URL }));
 app.use(express.json({ limit: '32kb' }));
-app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
-app.post('/api/auth/register', asyncRoute(register));
-app.post('/api/auth/login', asyncRoute(login));
-app.get('/api/auth/me', requireAuth, asyncRoute(me));
+
+// Route configuration
+app.use("/api", apiRoutes);
+
+// 404 handler
+app.use((req, res, next) => {
+    res.status(404).json({
+        error: {
+            code: 'NOT_FOUND',
+            message: 'Not found',
+            details: 'The requested resource was not found.'
+        }
+    });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Internal server error',
+        details: err.message
+    } });
+});
 
 app.use((err, _req, res, _next) => {
   if (err?.name === 'ZodError') {
@@ -29,3 +50,5 @@ app.use((err, _req, res, _next) => {
     error: { code: err.code || 'INTERNAL_ERROR', message: err.status ? err.message : 'Error interno del servidor.' }
   });
 });
+
+export default app;
