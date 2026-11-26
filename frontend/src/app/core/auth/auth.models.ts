@@ -5,6 +5,14 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  email: string;
+  username: string;
+  password: string;
+  name: string;
+  city?: string;
+}
+
 // Información del usuario autenticado
 export interface AuthUser {
   id: number;
