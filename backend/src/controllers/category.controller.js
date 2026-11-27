@@ -1,27 +1,10 @@
-import {obtenerPorId, obtenerTodas} from '../models/category.model.js';
+import { z } from 'zod';
+import { obtenerPorId, obtenerTodas } from '../models/category.model.js';
 
-const obtenerCategorias = async (req, res) => {
-    try {
-        const categorias = await obtenerTodas();
-        res.json(categorias);
-    }catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al obtener las categorías' });
-    }
+export async function obtenerCategorias(_req, res) { res.json(await obtenerTodas()); }
+export async function obtenerCategoriaPorId(req, res) {
+    const id = z.coerce.number().int().positive().safe().parse(req.params.id);
+    const category = await obtenerPorId(id);
+    if (!category) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Categoría no encontrada.' } });
+    res.json({ category });
 }
-
-const obtenerCategoriaPorId = async (req, res) => {
-    const categoriaId = req.params.id;
-    try {
-        const categoria = await obtenerPorId(categoriaId);
-        if (!categoria) {
-            return res.status(404).json({ error: 'Categoría no encontrada' });
-        }
-        res.json(categoria);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al obtener la categoría' });
-    }
-};
-
-export {obtenerCategorias, obtenerCategoriaPorId};

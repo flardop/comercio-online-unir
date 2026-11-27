@@ -18,11 +18,11 @@ Son cuentas ficticias. Las contraseñas se guardan como hashes en MySQL.
 - [x] Revisar que existan los tres roles y las tres cuentas; Lucía tiene el rol de usuario, Andrés el de moderador y Nora el de administradora.
 - [x] Iniciar sesión con cada una de las tres cuentas y comprobar que la respuesta incluya el rol esperado.
 - [x] Iniciar sesión con una contraseña incorrecta y comprobar que la API devuelva `401`.
-- [ ] Consultar el listado público y comprobar que aparecen seis artículos con estado `published`.
-- [ ] Filtrar por ciudad, categoría, texto, precio máximo y estado de conservación; confirmar que los resultados cumplen cada filtro.
-- [ ] Abrir una ficha de artículo publicado y confirmar que muestra título, descripción, precio, categoría, conservación, ciudad y vendedor.
-- [ ] Solicitar un artículo inexistente o que no esté publicado y comprobar que no aparece en el listado público y que la ficha devuelve `404`.
-- [ ] Consultar el perfil público de un vendedor y comprobar que solo muestra los datos públicos, sin email ni contraseña.
+- [x] Consultar el listado público y comprobar que aparecen seis artículos con estado `published`.
+- [x] Filtrar por ciudad, categoría, texto, precio máximo y estado de conservación; confirmar que los resultados cumplen cada filtro.
+- [x] Abrir una ficha de artículo publicado y confirmar que muestra título, descripción, precio, categoría, conservación, ciudad y vendedor.
+- [x] Solicitar un artículo inexistente o que no esté publicado y comprobar que no aparece en el listado público y que la ficha devuelve `404`.
+- [x] Consultar el perfil público de un vendedor y comprobar que solo muestra los datos públicos, sin email ni contraseña.
 - [ ] Recargar la página después del login, confirmar que la sesión continúa y después cerrar sesión.
 
 ## Consultas rápidas de MySQL
@@ -59,19 +59,64 @@ de `develop` (commit `10773d6`). No se ha usado la base de datos del equipo.
 - La consulta SQL del listado devuelve los seis artículos; el listado HTTP aún
   está pendiente de integrar.
 
-## Pendiente con la API pública
+## Comprobación de la API pública del 27 de noviembre de 2026
 
-La rama `articleapi`, commit `d6464b2`, aún consulta estos datos que no coinciden
-con el esquema de este sprint:
+Pruebas realizadas con los ajustes de `fix/integracion-api-mysql`, partiendo de
+`develop` (`316e779`), una instancia MySQL 9.2 local separada y la semilla del
+repositorio. No se ha utilizado la base del equipo. Estos resultados corresponden
+a esta rama y deben revisarse antes de integrarlos en `develop`.
 
-- Artículos: `provincia`, `pais` y `codigo_postal`.
-- Categorías: `descripcion`.
-- Perfil público: `provincia` y `pais`.
-- Busca artículos con `estado_publicacion = 'activo'`; la semilla utiliza
-  `published`, como el contrato de frontend.
-- La búsqueda `MATCH(titulo, descripcion)` necesita un índice FULLTEXT, o una
-  consulta compatible con el esquema actual.
+Se comprobaron 47 peticiones HTTP:
 
-Antes de ejecutar las pruebas del listado y perfil por HTTP, hay que acordar
-estas diferencias y reunir ambas API en un único servidor. Las casillas de
-frontend y API pública siguen pendientes.
+- Listado con seis artículos publicados y precios numéricos, paginación sin
+  repetir artículos entre páginas y orden por precio ascendente y descendente.
+- Filtros por texto, ciudad, categoría, precio y conservación, también combinados.
+- Ficha de artículo, categorías activas y perfil público del vendedor.
+- Respuestas con los campos que usan los modelos de frontend: listado
+  `{ data, pagination }`, ficha `{ article }`, categorías como lista y perfil `{ user }`.
+- Artículo inexistente o no publicado: `404`. Categoría inactiva y usuario
+  bloqueado: `404`. Los cambios de prueba en la base local se restauraron.
+- Perfil público sin email, contraseña ni roles. La imagen principal se presenta
+  en `images`; si no hay imagen, se devuelve una lista vacía.
+- Filtros e identificadores incorrectos: `400`, con el error de validación.
+- Login y `/api/auth/me` de las tres cuentas: `200`. Contraseña incorrecta,
+  ausencia de token y token inválido: `401`.
+
+Las consultas utilizan las columnas existentes y el estado `published`. La
+búsqueda de texto utiliza `LIKE`, por lo que no necesita un índice FULLTEXT.
+El perfil devuelve `ratingCount: 0` y `ratingAverage: 0`: este sprint todavía no
+incluye tablas de valoraciones.
+
+### Lo que falta comprobar con el equipo
+
+- Conectar los servicios de frontend, que todavía utilizan datos de muestra,
+  y probar desde la pantalla el listado, los filtros, la ficha y el perfil.
+- Acordar con Javier el filtro/listado de artículos del vendedor para su PR #23.
+- Comprobar en el navegador la sesión después de recargar y el cierre de sesión.
+- Repetir las comprobaciones en el entorno compartido cuando se revise e integre
+  esta corrección. Las casillas marcadas arriba corresponden a la prueba local
+  de la API, no a una validación de las pantallas.
+
+## Repetir las pruebas automáticas
+
+Desde `backend`, con las dependencias instaladas y MySQL 8 o superior en local:
+
+```bash
+npm run test:api
+```
+
+Por defecto se conecta a `127.0.0.1:3307`, con usuario `root` y contraseña vacía.
+Para otra configuración local se pueden indicar `TEST_DB_PORT`, `TEST_DB_USER`
+y `TEST_DB_PASSWORD`. El usuario de MySQL necesita permiso para crear y borrar
+la base temporal. No se utilizan las variables `DB_*` del proyecto.
+
+El comando crea una base con un nombre aleatorio `comercio_online_test_...`,
+carga la semilla dos veces, arranca la API en un puerto libre y comprueba datos,
+filtros, paginación, categorías, perfiles, validaciones, accesos, registro y
+visibilidad. Al terminar cierra la API y elimina únicamente la base que acaba
+de crear. No hay que arrancar el servidor a mano ni cargar el SQL previamente.
+
+Resultado del 27/11: los diez bloques de comprobación pasaron en MySQL 9.2 local
+con `TEST_DB_PORT=33365 npm run test:api`. Se confirmó que la base temporal ya
+no existía al terminar y que la base local anterior conservaba sus tres cuentas
+y seis artículos.

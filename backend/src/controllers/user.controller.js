@@ -1,16 +1,9 @@
-import {obtenerPorId} from '../models/user.model.js';
+import { z } from 'zod';
+import { obtenerPorId } from '../models/user.model.js';
 
-const obtenerUsuarioPorId = async (req, res) => {
-    const usuarioId = req.params.id;
-    try {
-        const usuario = await obtenerPorId(usuarioId);
-        if (!usuario) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
-        res.json(usuario);
-    } catch (error) {
-        res.status(500).json({ error: 'Error al obtener el usuario' });
-    }
+export async function obtenerUsuarioPorId(req, res) {
+    const id = z.coerce.number().int().positive().safe().parse(req.params.id);
+    const user = await obtenerPorId(id);
+    if (!user) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Usuario no encontrado.' } });
+    res.json({ user });
 }
-
-export { obtenerUsuarioPorId };
