@@ -1,0 +1,17 @@
+<article class="item">
+  <a class="itemLink" [routerLink]="['/articulos', article().id]">
+    <div class="itemImage">
+      @if (foto(); as url) {
+        <img [src]="url" [alt]="article().title" loading="lazy" (error)="marcarFotoFallida()">
+      } @else {
+        <span class="emojiFallback">{{ emoji() }}</span>
+      }
+    </div>
+    <div class="itemBody">
+      <div class="itemName">{{ article().title }}</div>
+      <div class="price">{{ precio() }}</div>
+      <div class="meta">⌖ {{ ciudad() }} · {{ condicion() }}</div>
+    </div>
+  </a>
+  <button class="heart" type="button" disabled title="Disponible próximamente" aria-label="Añadir a favoritos">♡</button>
+</article>

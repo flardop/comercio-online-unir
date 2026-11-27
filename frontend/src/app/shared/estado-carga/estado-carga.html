@@ -1,0 +1,7 @@
+@if (cargando()) {
+  <p class="empty" role="status">Cargando…</p>
+} @else if (error()) {
+  <p class="empty" role="alert">{{ error() }}</p>
+} @else if (vacio()) {
+  <div class="empty">{{ mensajeVacio() }}</div>
+}

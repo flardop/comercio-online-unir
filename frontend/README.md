@@ -36,3 +36,7 @@ curl http://localhost:4200/api/health
 La cabecera no aparece en la portada ni en el alta. En el resto, el logo vuelve a la portada y Explorar queda marcado.
 
 El formulario de acceso, los servicios y los datos de artículos llegan en otras ramas. Estas pantallas reservan la ruta y el estilo.
+
+## Explorar y Ficha
+
+`/explorar` y `/articulos/:id` siguen el prototipo `index v2.html` y leen de `ArticuloService`, `CategoriaService` y `UsuarioService`. **Hoy esos servicios devuelven datos de prueba** (`src/app/core/mocks/`) con la forma exacta del contrato de API; al conectar el backend solo cambia el cuerpo de cada método por una llamada `HttpClient`. Los filtros de Explorar viven en la URL (`?q`, `categoryId`, `maxPrice`, `condition`, `city`).
