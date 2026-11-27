@@ -3,6 +3,7 @@ import { obtenerTodos, obtenerPorId } from '../models/article.model.js';
 
 const filtrosSchema = z.object({
     q: z.string().trim().max(200).optional(),
+    ownerId: z.coerce.number().int().positive().safe().optional(),
     categoryId: z.coerce.number().int().positive().safe().optional(),
     minPrice: z.coerce.number().finite().nonnegative().optional(),
     maxPrice: z.coerce.number().finite().nonnegative().optional(),

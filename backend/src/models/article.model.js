@@ -26,6 +26,7 @@ export async function obtenerTodos(filtros) {
         params.push(`%${filtros.q}%`, `%${filtros.q}%`);
     }
     for (const [valor, condicion] of [
+        [filtros.ownerId, 'vendedor_id = ?'],
         [filtros.categoryId, 'categoria_id = ?'],
         [filtros.minPrice, 'precio >= ?'], [filtros.maxPrice, 'precio <= ?'],
         [filtros.condition, 'estado_conservacion = ?']

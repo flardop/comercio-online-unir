@@ -91,7 +91,8 @@ incluye tablas de valoraciones.
 
 - Conectar los servicios de frontend, que todavía utilizan datos de muestra,
   y probar desde la pantalla el listado, los filtros, la ficha y el perfil.
-- Acordar con Javier el filtro/listado de artículos del vendedor para su PR #23.
+- Revisar con Javier la propuesta de filtro por vendedor para su PR #23,
+  descrita al final de este documento.
 - Comprobar en el navegador la sesión después de recargar y el cierre de sesión.
 - Repetir las comprobaciones en el entorno compartido cuando se revise e integre
   esta corrección. Las casillas marcadas arriba corresponden a la prueba local
@@ -120,3 +121,30 @@ Resultado del 27/11: los diez bloques de comprobación pasaron en MySQL 9.2 loca
 con `TEST_DB_PORT=33365 npm run test:api`. Se confirmó que la base temporal ya
 no existía al terminar y que la base local anterior conservaba sus tres cuentas
 y seis artículos.
+
+
+## Propuesta para el perfil público del vendedor
+
+En `feat/articulos-vendedor` se propone añadir `ownerId` como filtro opcional
+al listado existente. Depende de la corrección de integración de la PR #24.
+La propuesta debe revisarse con Cristian y Javier antes de integrarse; no es
+un cambio de contrato acordado todavía.
+
+```http
+GET /api/articles?ownerId=1&page=1&pageSize=20&sort=recent
+```
+
+Devuelve el mismo formato `{ data, pagination }`, con artículos `published`
+del vendedor indicado. Se puede combinar con los demás filtros. Un vendedor
+sin artículos o inexistente devuelve `200` con `data: []` y total cero.
+Un identificador inválido devuelve `400`.
+
+Esto permite conectar `listarPorVendedor(ownerId)` de la PR #23. El servicio
+puede recoger `data` y utilizar `pagination` para pedir más páginas si hay más
+resultados. Esta propuesta no cambia los servicios ni las pantallas de Javier.
+
+La prueba automática comprueba los tres vendedores, la ausencia de artículos
+de otras personas, los filtros combinados, la paginación, identificadores
+incorrectos y la exclusión de borradores. El listado general conserva sus
+pruebas anteriores. Resultado local del 27/11: los once bloques de comprobación
+pasaron con MySQL 9.2.
