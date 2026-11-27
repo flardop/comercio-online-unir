@@ -84,6 +84,40 @@ await test('MySQL y API del Sprint 1', { timeout: 30000 }, async (t) => {
                 assert.equal(listado.pagination.total, ids.length);
             }
         });
+        await t.test('el perfil puede pedir solo los artículos publicados de su vendedor', async () => {
+            const todos = (await pedir('/articles')).data;
+            for (const vendedor of [1, 2, 3]) {
+                const esperados = todos.filter(a => a.ownerId === vendedor);
+                const listado = await pedir(`/articles?ownerId=${vendedor}`);
+                assert.ok(esperados.length > 0);
+                assert.deepEqual(listado.data, esperados);
+                assert.equal(listado.pagination.total, esperados.length);
+            }
+            const vacio = await pedir('/articles?ownerId=999999');
+            assert.deepEqual(vacio.data, []);
+            assert.equal(vacio.pagination.total, 0);
+            assert.equal(vacio.pagination.totalPages, 0);
+            for (const id of ['0', '-1', 'abc', '1.5', '9007199254740992']) {
+                assert.equal((await pedir(`/articles?ownerId=${id}`, 400)).error.code, 'VALIDATION_ERROR');
+            }
+            const muestra = todos.find(a => a.ownerId === 1);
+            const combinado = await pedir(`/articles?ownerId=1&categoryId=${muestra.categoryId}&maxPrice=${muestra.price}`);
+            assert.deepEqual(combinado.data, todos.filter(a => a.ownerId === 1 && a.categoryId === muestra.categoryId && a.price <= muestra.price));
+            const primera = await pedir('/articles?ownerId=1&pageSize=1');
+            const segunda = await pedir('/articles?ownerId=1&pageSize=1&page=2');
+            assert.equal(primera.data.length, 1);
+            assert.equal(segunda.data.length, 1);
+            assert.notEqual(primera.data[0].id, segunda.data[0].id);
+            assert.ok([...primera.data, ...segunda.data].every(a => a.ownerId === 1));
+            await pool.execute("UPDATE articulos SET estado_publicacion='draft' WHERE id=?", [muestra.id]);
+            try {
+                const listado = await pedir('/articles?ownerId=1');
+                assert.deepEqual(listado.data, todos.filter(a => a.ownerId === 1 && a.id !== muestra.id));
+                assert.equal(listado.pagination.total, todos.filter(a => a.ownerId === 1).length - 1);
+            } finally {
+                await pool.execute("UPDATE articulos SET estado_publicacion='published' WHERE id=?", [muestra.id]);
+            }
+        });
         await t.test('paginación y orden por precio', async () => {
             const primera = await pedir('/articles?pageSize=2');
             const segunda = await pedir('/articles?pageSize=2&page=2');
