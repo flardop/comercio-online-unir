@@ -50,6 +50,7 @@
 }
 
 @media (max-width: 430px) {
+  .reasons { grid-template-columns: 1fr; }
   .hero { margin-top: 15px; }
   .hero h1 { font-size: 30px; }
   .hero p { font-size: 15px; }
