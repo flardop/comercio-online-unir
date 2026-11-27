@@ -96,3 +96,27 @@ incluye tablas de valoraciones.
 - Repetir las comprobaciones en el entorno compartido cuando se revise e integre
   esta corrección. Las casillas marcadas arriba corresponden a la prueba local
   de la API, no a una validación de las pantallas.
+
+## Repetir las pruebas automáticas
+
+Desde `backend`, con las dependencias instaladas y MySQL 8 o superior en local:
+
+```bash
+npm run test:api
+```
+
+Por defecto se conecta a `127.0.0.1:3307`, con usuario `root` y contraseña vacía.
+Para otra configuración local se pueden indicar `TEST_DB_PORT`, `TEST_DB_USER`
+y `TEST_DB_PASSWORD`. El usuario de MySQL necesita permiso para crear y borrar
+la base temporal. No se utilizan las variables `DB_*` del proyecto.
+
+El comando crea una base con un nombre aleatorio `comercio_online_test_...`,
+carga la semilla dos veces, arranca la API en un puerto libre y comprueba datos,
+filtros, paginación, categorías, perfiles, validaciones, accesos, registro y
+visibilidad. Al terminar cierra la API y elimina únicamente la base que acaba
+de crear. No hay que arrancar el servidor a mano ni cargar el SQL previamente.
+
+Resultado del 27/11: los diez bloques de comprobación pasaron en MySQL 9.2 local
+con `TEST_DB_PORT=33365 npm run test:api`. Se confirmó que la base temporal ya
+no existía al terminar y que la base local anterior conservaba sus tres cuentas
+y seis artículos.
