@@ -94,6 +94,7 @@ export class Ficha {
       foto: this.fotoFallida() ? null : (article.images[0]?.url ?? null),
       emoji: categoryEmoji(categoria?.name),
       vendedor: nombre,
+      perfilId: vendedor?.id ?? null,
       inicial: nombre.charAt(0).toUpperCase(),
       valoracion:
         vendedor === null
