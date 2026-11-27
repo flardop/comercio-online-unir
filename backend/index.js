@@ -6,7 +6,7 @@ import {pool} from "./src/config/db.js";
 
 
 try{
-    await pool.getConnection();
+    await pool.query('SELECT 1');
     console.log("Connection to the database has been established successfully.");
 
     // await sequelize.sync(); // Synchronize the models with the database

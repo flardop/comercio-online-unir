@@ -6,7 +6,6 @@ import { config } from './config/config.js';
 import apiRoutes from "./routes/api.routes.js";
 
 const app = express();
-app.use(express.json());
 app.disable('x-powered-by');
 app.use(cors({ origin: config.FRONTEND_URL }));
 app.use(express.json({ limit: '32kb' }));
@@ -23,16 +22,6 @@ app.use((req, res, next) => {
             details: 'The requested resource was not found.'
         }
     });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Internal server error',
-        details: err.message
-    } });
 });
 
 app.use((err, _req, res, _next) => {
