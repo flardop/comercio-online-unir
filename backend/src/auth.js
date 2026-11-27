@@ -2,8 +2,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import { pool } from './db.js';
-import { config } from './config.js';
+import { pool } from './config/db.js';
+import { config } from './config/config.js';
 
 const registerSchema = z.object({
   email: z.string().trim().email().max(190),
