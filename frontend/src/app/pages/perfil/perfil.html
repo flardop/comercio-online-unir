@@ -1,25 +1,37 @@
-<main class="container">
+<main class="container page">
   <div class="panel">
-    <div class="flex">
-      <span class="avatar large">{{ persona.inicial }}</span>
-      <div>
-        <h1 class="sectionTitle">{{ persona.vendedor }}</h1>
-        <div class="muted">{{ persona.vendedorMeta }}. El email no se muestra.</div>
+    <a class="outline" routerLink="/explorar">← Volver a explorar</a>
+    <app-estado-carga [cargando]="estado().cargando" [error]="estado().error" />
+    @if (vista(); as p) {
+      <div class="flex perfil-cabecera">
+        <span class="avatar large">
+          @if (p.avatar) {
+            <img [src]="p.avatar" [alt]="p.nombre" (error)="marcarFotoFallida()">
+          } @else {
+            {{ p.inicial }}
+          }
+        </span>
+        <div>
+          <h1 class="sectionTitle">{{ p.nombre }}</h1>
+          <div class="muted">⌖ {{ p.ciudad }} · {{ p.valoracion }}</div>
+          <div class="meta">Perfil público. El email no se muestra.</div>
+        </div>
       </div>
-    </div>
-    <hr>
-    <h2 class="sectionTitle">Artículos publicados</h2>
-    <div class="cards">
-      @for (articulo of articulos; track articulo.id) {
-        <a class="item" [routerLink]="['/articulos', articulo.id]">
-          <div class="itemImage"><span class="emojiFallback">{{ articulo.emoji }}</span></div>
-          <div class="itemBody">
-            <div class="itemName">{{ articulo.titulo }}</div>
-            <div class="price">{{ articulo.precio }}</div>
-            <div class="meta">⌖ {{ articulo.lugar }}</div>
-          </div>
-        </a>
+      @if (p.biografia) {
+        <p class="perfil-bio">{{ p.biografia }}</p>
       }
-    </div>
+      <hr>
+      <h2 class="sectionTitle">Artículos publicados</h2>
+      <div class="cards">
+        @for (articulo of estado().articulos; track articulo.id) {
+          <app-articulo-card [article]="articulo" [emoji]="emojiDe(articulo)" />
+        }
+        <app-estado-carga
+          [error]="estado().articulos === null ? 'No se han podido cargar sus artículos. Inténtalo de nuevo.' : null"
+          [vacio]="estado().articulos?.length === 0"
+          mensajeVacio="Este vendedor todavía no tiene artículos publicados."
+        />
+      </div>
+    }
   </div>
 </main>
