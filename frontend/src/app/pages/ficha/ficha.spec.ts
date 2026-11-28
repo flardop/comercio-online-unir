@@ -134,4 +134,22 @@ describe('Ficha', () => {
     harness.detectChanges();
     expect(raiz.querySelector('.bigImg img')?.getAttribute('src')).toBe(otro.images[0].url);
   });
+
+  it('el bloque del vendedor enlaza a su perfil público', async () => {
+    obtener.mockReturnValue(of(ARTICLES[2]));
+    obtenerUsuario.mockReturnValue(of(USERS[2]));
+    const raiz = await abrir('/articulos/3');
+    const enlace = raiz.querySelector('a.vendedor');
+    expect(enlace?.getAttribute('href')).toBe('/perfiles/3');
+    expect(enlace?.textContent).toContain('Nerea');
+    expect(enlace?.textContent).toContain('Ver perfil');
+  });
+
+  it('no enlaza al perfil si no se ha podido cargar el vendedor', async () => {
+    obtener.mockReturnValue(of(ARTICLES[0]));
+    obtenerUsuario.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    const raiz = await abrir();
+    expect(raiz.querySelector('a[href^="/perfiles/"]')).toBeNull();
+    expect(raiz.querySelector('.vendedor')?.textContent).toContain('Vendedor no disponible');
+  });
 });

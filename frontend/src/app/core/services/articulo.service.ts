@@ -26,4 +26,19 @@ export class ArticuloService {
       return articulo ? of(articulo) : throwError(() => notFound('Artículo no encontrado'));
     }).pipe(delay(this.retardo));
   }
+
+  /**
+   * Artículos publicados de un vendedor, del más reciente al más antiguo.
+   * El contrato aún no define cómo pedirlos (GET /articles no filtra por vendedor y PublicProfile
+   * no trae artículos); cuando se acuerde, solo cambia el cuerpo de este método.
+   */
+  listarPorVendedor(ownerId: number): Observable<Article[]> {
+    return defer(() =>
+      of(
+        ARTICLES.filter((a) => a.ownerId === ownerId && a.status === 'published').sort((a, b) =>
+          b.createdAt.localeCompare(a.createdAt),
+        ),
+      ),
+    ).pipe(delay(this.retardo));
+  }
 }

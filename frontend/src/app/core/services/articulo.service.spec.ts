@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
+import { ARTICLES } from '../mocks/datos-prueba';
 import { ArticuloService } from './articulo.service';
 import { MOCK_DELAY_MS } from './mock-delay';
 
@@ -38,5 +39,26 @@ describe('ArticuloService (datos de prueba)', () => {
   it('obtener falla con 404 si el id no existe', async () => {
     const error = (await firstValueFrom(service.obtener(999)).catch((e: unknown) => e)) as HttpErrorResponse;
     expect(error.status).toBe(404);
+  });
+
+  it('listarPorVendedor devuelve solo los publicados de ese vendedor', async () => {
+    const articulos = await firstValueFrom(service.listarPorVendedor(1));
+    expect(articulos.map((a) => a.id)).toEqual([1]);
+  });
+
+  it('listarPorVendedor ordena del más reciente al más antiguo', async () => {
+    const base = ARTICLES[0];
+    ARTICLES.push({ ...base, id: 900, ownerId: 99, createdAt: '2026-01-01T00:00:00.000Z' });
+    ARTICLES.push({ ...base, id: 901, ownerId: 99, createdAt: '2026-02-01T00:00:00.000Z' });
+    try {
+      const articulos = await firstValueFrom(service.listarPorVendedor(99));
+      expect(articulos.map((a) => a.id)).toEqual([901, 900]);
+    } finally {
+      ARTICLES.splice(-2, 2);
+    }
+  });
+
+  it('listarPorVendedor devuelve una lista vacía si no tiene artículos', async () => {
+    expect(await firstValueFrom(service.listarPorVendedor(999))).toEqual([]);
   });
 });

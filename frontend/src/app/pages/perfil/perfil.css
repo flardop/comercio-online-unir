@@ -1,0 +1,5 @@
+.perfil-cabecera { margin-top: 20px; flex-wrap: nowrap; }
+.perfil-cabecera > div { min-width: 0; }
+.avatar { overflow: hidden; flex-shrink: 0; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.perfil-bio { line-height: 1.8; }

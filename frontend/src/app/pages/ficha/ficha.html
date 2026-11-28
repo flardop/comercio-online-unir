@@ -19,13 +19,24 @@
           <hr>
           <h3>Descripción</h3>
           <p style="line-height: 1.8">{{ f.descripcion }}</p>
-          <div class="flex" style="margin: 24px 0">
-            <span class="avatar">{{ f.inicial }}</span>
-            <div>
-              <strong>{{ f.vendedor }}</strong>
-              <div class="meta">{{ f.valoracion }}</div>
+          @if (f.perfilId !== null) {
+            <a class="flex vendedor" [routerLink]="['/perfiles', f.perfilId]">
+              <span class="avatar">{{ f.inicial }}</span>
+              <span>
+                <strong>{{ f.vendedor }}</strong>
+                <span class="meta">{{ f.valoracion }}</span>
+                <span class="verPerfil">Ver perfil →</span>
+              </span>
+            </a>
+          } @else {
+            <div class="flex vendedor">
+              <span class="avatar">{{ f.inicial }}</span>
+              <span>
+                <strong>{{ f.vendedor }}</strong>
+                <span class="meta">{{ f.valoracion }}</span>
+              </span>
             </div>
-          </div>
+          }
           <div class="flex">
             <button class="primary" type="button" disabled title="Disponible próximamente">💬 Contactar</button>
             <button class="secondary" type="button" disabled title="Disponible próximamente">♡ Favoritos</button>
