@@ -24,7 +24,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   Hogar: '⌂',
   Moda: '👕',
   Tecnología: '▣',
-  Electrónica: '▣',
+  Electrónica: '📱',
   Ropa: '👕',
   Deporte: '⚽',
   Libros: '📚',

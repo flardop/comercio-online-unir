@@ -44,7 +44,7 @@ describe('etiquetas', () => {
   });
 
   it('tiene icono y emoji para Electrónica y Ropa, las categorías de la base de datos', () => {
-    expect(categoryIcon('Electrónica')).toBe('▣');
+    expect(categoryIcon('Electrónica')).toBe('📱');
     expect(categoryIcon('Ropa')).toBe('👕');
     expect(categoryEmoji('Electrónica')).toBe('📱');
     expect(categoryEmoji('Ropa')).toBe('🧥');
