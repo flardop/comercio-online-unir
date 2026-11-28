@@ -36,7 +36,7 @@ describe('etiquetas', () => {
   });
 
   it('asigna icono y emoji por categoría, con valores por defecto', () => {
-    expect(categoryIcon('Hogar')).toBe('⌂');
+    expect(categoryIcon('Hogar')).toBe('🏠');
     expect(categoryIcon('Otra')).toBe('✦');
     expect(categoryEmoji('Deporte')).toBe('🚲');
     expect(categoryEmoji('Otra')).toBe('📦');
