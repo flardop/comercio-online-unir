@@ -1,17 +1,19 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom } from 'rxjs';
+import { CATEGORIES } from '../mocks/datos-prueba';
 import { CategoriaService } from './categoria.service';
-import { MOCK_DELAY_MS } from './mock-delay';
 
-describe('CategoriaService (datos de prueba)', () => {
+describe('CategoriaService', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [{ provide: MOCK_DELAY_MS, useValue: 0 }] });
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
   });
 
-  it('listar devuelve solo las categorías activas', async () => {
-    const categorias = await firstValueFrom(TestBed.inject(CategoriaService).listar());
-    expect(categorias.length).toBe(6);
-    expect(categorias.every((c) => c.isActive)).toBe(true);
-    expect(categorias.map((c) => c.name)).toContain('Hogar');
+  it('listar pide GET /api/categories y devuelve la lista', async () => {
+    const promesa = TestBed.inject(CategoriaService).listar();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/categories').flush(CATEGORIES);
+    expect(await promesa).toEqual(CATEGORIES);
+    http.verify();
   });
 });

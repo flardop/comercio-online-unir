@@ -2,23 +2,38 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { NEVER, of, throwError } from 'rxjs';
 import { ARTICLES, CATEGORIES } from '../../core/mocks/datos-prueba';
-import { filtrarArticulos } from '../../core/mocks/filtrar-articulos';
+import { Article, ArticlePage } from '../../core/models/article';
 import { ArticuloService } from '../../core/services/articulo.service';
 import { CategoriaService } from '../../core/services/categoria.service';
 import { Explorar } from './explorar';
 
+/** Deja que terminen las promesas pendientes y repinta la pantalla. */
+async function esperar(harness: RouterTestingHarness): Promise<void> {
+  harness.detectChanges();
+  await new Promise((resolve) => setTimeout(resolve));
+  harness.detectChanges();
+}
+
+function pagina(data: Article[]): ArticlePage {
+  return { data, pagination: { page: 1, pageSize: 20, total: data.length, totalPages: 1 } };
+}
+
+const PUBLICADOS = ARTICLES.filter((a) => a.status === 'published');
+const DE_TECNOLOGIA = PUBLICADOS.filter((a) => a.categoryId === 3);
+
 describe('Explorar', () => {
   const listar = vi.fn();
+  const listarCategorias = vi.fn();
 
   beforeEach(() => {
-    listar.mockReset();
+    listar.mockReset().mockResolvedValue(pagina(PUBLICADOS));
+    listarCategorias.mockReset().mockResolvedValue(CATEGORIES);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'explorar', component: Explorar }]),
         { provide: ArticuloService, useValue: { listar } },
-        { provide: CategoriaService, useValue: { listar: () => of(CATEGORIES) } },
+        { provide: CategoriaService, useValue: { listar: listarCategorias } },
       ],
     });
   });
@@ -26,12 +41,11 @@ describe('Explorar', () => {
   async function abrir(url = '/explorar'): Promise<{ harness: RouterTestingHarness; raiz: HTMLElement }> {
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl(url, Explorar);
-    harness.detectChanges();
+    await esperar(harness);
     return { harness, raiz: harness.routeNativeElement as HTMLElement };
   }
 
   it('muestra las tarjetas, el contador y las fichas de categoría', async () => {
-    listar.mockImplementation((filtro) => of(filtrarArticulos(ARTICLES, filtro)));
     const { raiz } = await abrir();
     expect(raiz.querySelectorAll('.item').length).toBe(8);
     expect(raiz.querySelector('.resultsCount')?.textContent).toContain('8 artículos');
@@ -40,7 +54,7 @@ describe('Explorar', () => {
   });
 
   it('lee los filtros de la URL y los envía al servicio', async () => {
-    listar.mockImplementation((filtro) => of(filtrarArticulos(ARTICLES, filtro)));
+    listar.mockResolvedValue(pagina(DE_TECNOLOGIA));
     const { raiz } = await abrir('/explorar?categoryId=3&maxPrice=100');
     expect(listar).toHaveBeenCalledWith({ categoryId: 3, maxPrice: 100 });
     expect(raiz.querySelectorAll('.item').length).toBe(2);
@@ -48,7 +62,6 @@ describe('Explorar', () => {
   });
 
   it('cambiar un filtro actualiza la URL y vuelve a consultar', async () => {
-    listar.mockImplementation((filtro) => of(filtrarArticulos(ARTICLES, filtro)));
     const { harness, raiz } = await abrir();
     const select = raiz.querySelector<HTMLSelectElement>('select[aria-label="Precio máximo"]') as HTMLSelectElement;
     select.value = '100';
@@ -59,7 +72,6 @@ describe('Explorar', () => {
   });
 
   it('pulsar una ficha de categoría aplica el filtro', async () => {
-    listar.mockImplementation((filtro) => of(filtrarArticulos(ARTICLES, filtro)));
     const { harness, raiz } = await abrir();
     const fichas = Array.from(raiz.querySelectorAll<HTMLButtonElement>('button.category'));
     fichas.find((f) => f.textContent?.includes('Tecnología'))?.click();
@@ -68,7 +80,6 @@ describe('Explorar', () => {
   });
 
   it('«Ver todos» limpia los filtros', async () => {
-    listar.mockImplementation((filtro) => of(filtrarArticulos(ARTICLES, filtro)));
     const { harness, raiz } = await abrir('/explorar?categoryId=3&city=Madrid');
     raiz.querySelector<HTMLButtonElement>('button.verTodos')?.click();
     await harness.fixture.whenStable();
@@ -76,7 +87,7 @@ describe('Explorar', () => {
   });
 
   it('muestra el estado cargando mientras llega la respuesta', async () => {
-    listar.mockReturnValue(NEVER);
+    listar.mockReturnValue(new Promise(() => {}));
     const { raiz } = await abrir();
     expect(raiz.textContent).toContain('Cargando');
     expect(raiz.querySelectorAll('.item').length).toBe(0);
@@ -84,25 +95,43 @@ describe('Explorar', () => {
   });
 
   it('muestra el error si falla la consulta', async () => {
-    listar.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    listar.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
     const { raiz } = await abrir();
     expect(raiz.querySelector('[role="alert"]')?.textContent).toContain('No se han podido cargar los artículos');
     expect(raiz.querySelector('.resultsCount')).toBeNull();
   });
 
   it('muestra el texto de v2 cuando no hay resultados', async () => {
-    listar.mockImplementation((filtro) => of(filtrarArticulos(ARTICLES, filtro)));
+    listar.mockResolvedValue(pagina([]));
     const { raiz } = await abrir('/explorar?city=Sevilla');
     expect(raiz.textContent).toContain('Todavía no hay artículos para esos filtros. Prueba otra búsqueda ✨');
     expect(raiz.querySelector('.resultsCount')?.textContent).toContain('0 artículos');
   });
 
   it('«Vender ahora» está desactivado', async () => {
-    listar.mockImplementation((filtro) => of(filtrarArticulos(ARTICLES, filtro)));
     const { raiz } = await abrir();
     const boton = Array.from(raiz.querySelectorAll<HTMLButtonElement>('.heroActions button')).find((b) =>
       b.textContent?.includes('Vender ahora'),
     );
     expect(boton?.disabled).toBe(true);
+  });
+
+  it('muestra los artículos aunque fallen las categorías', async () => {
+    listarCategorias.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
+    const { raiz } = await abrir();
+    expect(raiz.querySelectorAll('.item').length).toBe(8);
+    expect(raiz.querySelectorAll('button.category').length).toBe(0);
+  });
+
+  it('ignora una respuesta que llega tarde de un filtro anterior', async () => {
+    let responderTarde: (p: ArticlePage) => void = () => {};
+    listar.mockReturnValueOnce(new Promise<ArticlePage>((resolve) => (responderTarde = resolve)));
+    listar.mockResolvedValue(pagina(DE_TECNOLOGIA));
+    const { harness, raiz } = await abrir();
+    await harness.navigateByUrl('/explorar?categoryId=3');
+    await esperar(harness);
+    responderTarde(pagina(PUBLICADOS));
+    await esperar(harness);
+    expect(raiz.querySelectorAll('.item').length).toBe(DE_TECNOLOGIA.length);
   });
 });

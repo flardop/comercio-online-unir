@@ -1,8 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { catchError, forkJoin, map, of, startWith, switchMap, tap } from 'rxjs';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Article } from '../../core/models/article';
 import { Category } from '../../core/models/category';
 import { PublicProfile } from '../../core/models/public-profile';
@@ -38,34 +36,64 @@ function estadoError(error: unknown): EstadoPerfil {
   styleUrl: './perfil.css',
 })
 export class Perfil {
-  private readonly route = inject(ActivatedRoute);
+  /** El :id de la ruta (lo rellena el router gracias a withComponentInputBinding). */
+  readonly id = input<string>();
+
   private readonly articulosService = inject(ArticuloService);
   private readonly categoriasService = inject(CategoriaService);
   private readonly usuarios = inject(UsuarioService);
 
   protected readonly fotoFallida = signal(false);
 
-  protected readonly estado = toSignal(
-    this.route.paramMap.pipe(
-      map((params) => Number(params.get('id'))),
-      tap(() => this.fotoFallida.set(false)),
-      switchMap((id) =>
-        !Number.isInteger(id) || id <= 0
-          ? of(NO_ENCONTRADO)
-          : this.usuarios.obtener(id).pipe(
-              switchMap((vendedor) =>
-                forkJoin({
-                  articulos: this.articulosService.listarPorVendedor(vendedor.id).pipe(catchError(() => of(null))),
-                  categorias: this.categoriasService.listar().pipe(catchError(() => of([] as Category[]))),
-                }).pipe(map((r): EstadoPerfil => ({ cargando: false, error: null, vendedor, ...r }))),
-              ),
-              catchError((error: unknown) => of(estadoError(error))),
-              startWith(CARGANDO),
-            ),
-      ),
-    ),
-    { initialValue: CARGANDO },
-  );
+  protected readonly estado = signal<EstadoPerfil>(CARGANDO);
+
+  /** Número de la última carga: sirve para ignorar las respuestas que llegan tarde. */
+  private ultimaPeticion = 0;
+
+  constructor() {
+    // El effect se ejecuta al entrar y cada vez que cambia el id.
+    effect(() => {
+      this.cargar(Number(this.id()));
+    });
+  }
+
+  private async cargar(id: number): Promise<void> {
+    const peticion = ++this.ultimaPeticion;
+    this.fotoFallida.set(false);
+    if (!Number.isInteger(id) || id <= 0) {
+      this.estado.set(NO_ENCONTRADO);
+      return;
+    }
+    this.estado.set(CARGANDO);
+    try {
+      const vendedor = await this.usuarios.obtener(id);
+      const articulos = await this.buscarArticulos(vendedor.id);
+      const categorias = await this.buscarCategorias();
+      if (peticion !== this.ultimaPeticion) return;
+      this.estado.set({ cargando: false, error: null, vendedor, articulos, categorias });
+    } catch (error) {
+      if (peticion !== this.ultimaPeticion) return;
+      this.estado.set(estadoError(error));
+    }
+  }
+
+  /** Dato secundario: si falla, el perfil se muestra igualmente. */
+  private async buscarArticulos(ownerId: number): Promise<Article[] | null> {
+    try {
+      return await this.articulosService.listarPorVendedor(ownerId);
+    } catch {
+      return null;
+    }
+  }
+
+  /** Dato secundario: si falla, se usa el emoji genérico. */
+  private async buscarCategorias(): Promise<Category[]> {
+    try {
+      return await this.categoriasService.listar();
+    } catch {
+      return [];
+    }
+  }
 
   protected readonly vista = computed(() => {
     const { vendedor } = this.estado();

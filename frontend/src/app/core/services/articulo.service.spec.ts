@@ -1,64 +1,66 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom } from 'rxjs';
 import { ARTICLES } from '../mocks/datos-prueba';
 import { ArticuloService } from './articulo.service';
-import { MOCK_DELAY_MS } from './mock-delay';
 
-describe('ArticuloService (datos de prueba)', () => {
+describe('ArticuloService', () => {
   let service: ArticuloService;
+  let http: HttpTestingController;
+
+  const PAGINA = { data: [ARTICLES[0]], pagination: { page: 1, pageSize: 20, total: 1, totalPages: 1 } };
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [{ provide: MOCK_DELAY_MS, useValue: 0 }] });
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     service = TestBed.inject(ArticuloService);
+    http = TestBed.inject(HttpTestingController);
   });
 
-  it('listar devuelve una página con solo artículos publicados', async () => {
-    const pagina = await firstValueFrom(service.listar());
-    expect(pagina.pagination.total).toBe(8);
-    expect(pagina.data.every((a) => a.status === 'published')).toBe(true);
+  afterEach(() => http.verify());
+
+  it('listar sin filtros pide GET /api/articles y devuelve la página completa', async () => {
+    const promesa = service.listar();
+    const peticion = http.expectOne('/api/articles');
+    expect(peticion.request.method).toBe('GET');
+    peticion.flush(PAGINA);
+    expect(await promesa).toEqual(PAGINA);
   });
 
-  it('listar aplica los filtros del contrato', async () => {
-    const pagina = await firstValueFrom(service.listar({ categoryId: 3 }));
-    expect(pagina.data.map((a) => a.id)).toEqual([1, 4]);
+  it('listar envía solo los filtros que tienen valor', async () => {
+    const promesa = service.listar({ q: 'cámara', categoryId: 3, maxPrice: 100, city: '', condition: undefined });
+    const peticion = http.expectOne((p) => p.url === '/api/articles');
+    expect(peticion.request.params.keys().sort()).toEqual(['categoryId', 'maxPrice', 'q']);
+    expect(peticion.request.params.get('q')).toBe('cámara');
+    expect(peticion.request.params.get('categoryId')).toBe('3');
+    expect(peticion.request.params.get('maxPrice')).toBe('100');
+    peticion.flush(PAGINA);
+    await promesa;
   });
 
-  it('obtener devuelve un artículo publicado', async () => {
-    const articulo = await firstValueFrom(service.obtener(1));
-    expect(articulo.title).toBe('Cámara instantánea');
+  it('obtener pide GET /api/articles/{id} y devuelve el artículo sin envoltorio', async () => {
+    const promesa = service.obtener(1);
+    http.expectOne('/api/articles/1').flush({ article: ARTICLES[0] });
+    expect(await promesa).toEqual(ARTICLES[0]);
   });
 
-  it('obtener falla con 404 y la forma de error del contrato si no está publicado', async () => {
-    const error = (await firstValueFrom(service.obtener(9)).catch((e: unknown) => e)) as HttpErrorResponse;
+  it('obtener falla con el 404 de la API', async () => {
+    const promesa = service.obtener(999);
+    http
+      .expectOne('/api/articles/999')
+      .flush({ error: { code: 'NOT_FOUND', message: 'Artículo no encontrado.' } }, { status: 404, statusText: 'Not Found' });
+    const error = (await promesa.catch((e: unknown) => e)) as HttpErrorResponse;
     expect(error).toBeInstanceOf(HttpErrorResponse);
     expect(error.status).toBe(404);
-    expect(error.error).toEqual({ error: { code: 'NOT_FOUND', message: 'Artículo no encontrado' } });
   });
 
-  it('obtener falla con 404 si el id no existe', async () => {
-    const error = (await firstValueFrom(service.obtener(999)).catch((e: unknown) => e)) as HttpErrorResponse;
-    expect(error.status).toBe(404);
-  });
-
-  it('listarPorVendedor devuelve solo los publicados de ese vendedor', async () => {
-    const articulos = await firstValueFrom(service.listarPorVendedor(1));
-    expect(articulos.map((a) => a.id)).toEqual([1]);
-  });
-
-  it('listarPorVendedor ordena del más reciente al más antiguo', async () => {
-    const base = ARTICLES[0];
-    ARTICLES.push({ ...base, id: 900, ownerId: 99, createdAt: '2026-01-01T00:00:00.000Z' });
-    ARTICLES.push({ ...base, id: 901, ownerId: 99, createdAt: '2026-02-01T00:00:00.000Z' });
-    try {
-      const articulos = await firstValueFrom(service.listarPorVendedor(99));
-      expect(articulos.map((a) => a.id)).toEqual([901, 900]);
-    } finally {
-      ARTICLES.splice(-2, 2);
-    }
-  });
-
-  it('listarPorVendedor devuelve una lista vacía si no tiene artículos', async () => {
-    expect(await firstValueFrom(service.listarPorVendedor(999))).toEqual([]);
+  it('listarPorVendedor usa ownerId y sort=recent y respeta el orden recibido', async () => {
+    const promesa = service.listarPorVendedor(3);
+    const peticion = http.expectOne((p) => p.url === '/api/articles');
+    expect(peticion.request.params.get('ownerId')).toBe('3');
+    expect(peticion.request.params.get('sort')).toBe('recent');
+    expect(peticion.request.params.get('pageSize')).toBe('100');
+    const recibidos = [{ ...ARTICLES[0], id: 2 }, { ...ARTICLES[0], id: 7 }];
+    peticion.flush({ data: recibidos, pagination: PAGINA.pagination });
+    expect((await promesa).map((a) => a.id)).toEqual([2, 7]);
   });
 });
