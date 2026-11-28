@@ -15,7 +15,7 @@ import {
 } from '../../core/util/etiquetas';
 import { ArticuloCard } from '../../shared/articulo-card/articulo-card';
 import { EstadoCarga } from '../../shared/estado-carga/estado-carga';
-import { CLAVES_FILTRO, ClaveFiltro, filtroDesdeUrl } from './filtro-url';
+import { ClaveFiltro, filtroDesdeUrl } from './filtro-url';
 
 interface EstadoListado {
   cargando: boolean;
@@ -49,6 +49,9 @@ export class Explorar {
     initialValue: this.route.snapshot.queryParamMap,
   });
   protected readonly filtro = computed(() => filtroDesdeUrl(this.parametros()));
+
+  /** true si hay algún filtro aplicado: sirve para mostrar «Limpiar filtros». */
+  protected readonly hayFiltros = computed(() => Object.keys(this.filtro()).length > 0);
 
   protected readonly categorias = signal<Category[]>([]);
   protected readonly estado = signal<EstadoListado>(CARGANDO);
@@ -107,9 +110,9 @@ export class Explorar {
     });
   }
 
+  /** Vuelve a la misma página sin filtros en la URL. */
   protected limpiar(): void {
-    const vacios = Object.fromEntries(CLAVES_FILTRO.map((clave) => [clave, null]));
-    void this.router.navigate([], { relativeTo: this.route, queryParams: vacios, queryParamsHandling: 'merge' });
+    void this.router.navigate([], { relativeTo: this.route, queryParams: {} });
   }
 
   protected irAProductos(destino: HTMLElement): void {

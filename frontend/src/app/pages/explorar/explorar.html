@@ -54,6 +54,9 @@
         <option [value]="c" [selected]="filtro().city === c">{{ c }}</option>
       }
     </select>
+    @if (hayFiltros()) {
+      <button class="outline" type="button" (click)="limpiar()">✕ Limpiar filtros</button>
+    }
     @if (!estado().cargando && !estado().error) {
       <span class="resultsCount">{{ total() }} artículos</span>
     }

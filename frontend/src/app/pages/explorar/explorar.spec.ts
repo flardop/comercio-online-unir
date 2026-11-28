@@ -86,6 +86,30 @@ describe('Explorar', () => {
     expect(TestBed.inject(Router).url).toBe('/explorar');
   });
 
+  function botonLimpiar(raiz: HTMLElement): HTMLButtonElement | undefined {
+    return Array.from(raiz.querySelectorAll('button')).find((b) => b.textContent?.includes('Limpiar filtros'));
+  }
+
+  it('sin filtros no muestra «Limpiar filtros»', async () => {
+    const { raiz } = await abrir();
+    expect(botonLimpiar(raiz)).toBeUndefined();
+  });
+
+  it('«Limpiar filtros» quita todos los filtros, incluida la búsqueda, y desaparece', async () => {
+    const { harness, raiz } = await abrir('/explorar?q=camara&city=Madrid');
+    botonLimpiar(raiz)?.click();
+    await esperar(harness);
+    expect(TestBed.inject(Router).url).toBe('/explorar');
+    expect(listar).toHaveBeenLastCalledWith({});
+    expect(botonLimpiar(raiz)).toBeUndefined();
+  });
+
+  it('muestra «Limpiar filtros» aunque no haya resultados', async () => {
+    listar.mockResolvedValue(pagina([]));
+    const { raiz } = await abrir('/explorar?city=Sevilla');
+    expect(botonLimpiar(raiz)).toBeDefined();
+  });
+
   it('muestra el estado cargando mientras llega la respuesta', async () => {
     listar.mockReturnValue(new Promise(() => {}));
     const { raiz } = await abrir();

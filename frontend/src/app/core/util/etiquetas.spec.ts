@@ -43,6 +43,13 @@ describe('etiquetas', () => {
     expect(categoryEmoji(undefined)).toBe('📦');
   });
 
+  it('tiene icono y emoji para Electrónica y Ropa, las categorías de la base de datos', () => {
+    expect(categoryIcon('Electrónica')).toBe('▣');
+    expect(categoryIcon('Ropa')).toBe('👕');
+    expect(categoryEmoji('Electrónica')).toBe('📱');
+    expect(categoryEmoji('Ropa')).toBe('🧥');
+  });
+
   it('define las opciones de filtro de v2', () => {
     expect(FILTER_CONDITIONS).toEqual(['new', 'like_new', 'good', 'fair']);
     expect(FILTER_MAX_PRICES).toEqual([30, 100, 300]);
