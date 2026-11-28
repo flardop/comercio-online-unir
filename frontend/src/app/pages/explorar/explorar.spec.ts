@@ -116,6 +116,12 @@ describe('Explorar', () => {
     expect(raiz.querySelector('.cards .emojiFallback')?.textContent).toBe('🚲');
   });
 
+  it('con un solo resultado dice «1 artículo», en singular', async () => {
+    listar.mockResolvedValue(pagina([ARTICLES[0]]));
+    const { raiz } = await abrir();
+    expect(raiz.querySelector('.resultsCount')?.textContent?.trim()).toBe('1 artículo');
+  });
+
   it('muestra el estado cargando mientras llega la respuesta', async () => {
     listar.mockReturnValue(new Promise(() => {}));
     const { raiz } = await abrir();
