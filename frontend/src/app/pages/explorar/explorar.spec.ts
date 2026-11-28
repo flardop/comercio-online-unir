@@ -110,6 +110,12 @@ describe('Explorar', () => {
     expect(botonLimpiar(raiz)).toBeDefined();
   });
 
+  it('pasa a la tarjeta el emoji de la categoría del artículo', async () => {
+    listar.mockResolvedValue(pagina([{ ...ARTICLES[2], images: [] }]));
+    const { raiz } = await abrir();
+    expect(raiz.querySelector('.cards .emojiFallback')?.textContent).toBe('🚲');
+  });
+
   it('muestra el estado cargando mientras llega la respuesta', async () => {
     listar.mockReturnValue(new Promise(() => {}));
     const { raiz } = await abrir();

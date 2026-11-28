@@ -111,12 +111,9 @@ export class Perfil {
     };
   });
 
-  private readonly categoriasPorId = computed(
-    () => new Map(this.estado().categorias.map((c) => [c.id, c.name])),
-  );
-
   protected emojiDe(articulo: Article): string {
-    return categoryEmoji(this.categoriasPorId().get(articulo.categoryId));
+    const categoria = this.estado().categorias.find((c) => c.id === articulo.categoryId);
+    return categoryEmoji(categoria?.name);
   }
 
   protected marcarFotoFallida(): void {

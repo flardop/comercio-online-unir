@@ -96,14 +96,14 @@ export class Explorar {
   protected readonly vacio = computed(
     () => !this.estado().cargando && this.estado().error === null && this.total() === 0,
   );
-  private readonly categoriasPorId = computed(() => new Map(this.categorias().map((c) => [c.id, c.name])));
 
   protected emojiDe(articulo: Article): string {
-    return categoryEmoji(this.categoriasPorId().get(articulo.categoryId));
+    const categoria = this.categorias().find((c) => c.id === articulo.categoryId);
+    return categoryEmoji(categoria?.name);
   }
 
   protected fijar(clave: ClaveFiltro, valor: string): void {
-    void this.router.navigate([], {
+    this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { [clave]: valor.trim() === '' ? null : valor },
       queryParamsHandling: 'merge',
@@ -112,7 +112,7 @@ export class Explorar {
 
   /** Vuelve a la misma página sin filtros en la URL. */
   protected limpiar(): void {
-    void this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+    this.router.navigate([], { relativeTo: this.route, queryParams: {} });
   }
 
   protected irAProductos(destino: HTMLElement): void {
