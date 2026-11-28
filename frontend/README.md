@@ -35,8 +35,14 @@ curl http://localhost:4200/api/health
 
 La cabecera no aparece en la portada ni en el alta. En el resto, el logo vuelve a la portada y Explorar queda marcado.
 
-El formulario de acceso, los servicios y los datos de artículos llegan en otras ramas. Estas pantallas reservan la ruta y el estilo.
+## Explorar, ficha y perfil público
 
-## Explorar y Ficha
+`/explorar` y `/articulos/:id` siguen el prototipo `index v2.html`. Junto con `/perfiles/:id`, leen los datos de la API mediante `ArticuloService`, `CategoriaService` y `UsuarioService`, así que el backend y MySQL tienen que estar en marcha.
 
-`/explorar` y `/articulos/:id` siguen el prototipo `index v2.html` y leen de `ArticuloService`, `CategoriaService` y `UsuarioService`. **Hoy esos servicios devuelven datos de prueba** (`src/app/core/mocks/`) con la forma exacta del contrato de API; al conectar el backend solo cambia el cuerpo de cada método por una llamada `HttpClient`. Los filtros de Explorar viven en la URL (`?q`, `categoryId`, `maxPrice`, `condition`, `city`).
+| Servicio | Llamadas |
+| --- | --- |
+| `ArticuloService` | `GET /api/articles` y `GET /api/articles/{id}`. Para el perfil usa `?ownerId={id}&sort=recent&pageSize=100` |
+| `CategoriaService` | `GET /api/categories` |
+| `UsuarioService` | `GET /api/users/{id}` |
+
+Los filtros de Explorar viven en la URL (`?q`, `categoryId`, `maxPrice`, `condition`, `city`). Los datos de `src/app/core/mocks/` solo se usan en las pruebas.
