@@ -1,15 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, defer, delay, of } from 'rxjs';
-import { CATEGORIES } from '../mocks/datos-prueba';
+import { firstValueFrom } from 'rxjs';
 import { Category } from '../models/category';
-import { MOCK_DELAY_MS } from './mock-delay';
 
-/** Contrato: GET /categories (array de categorías activas, sin envoltorio). */
 @Injectable({ providedIn: 'root' })
 export class CategoriaService {
-  private readonly retardo = inject(MOCK_DELAY_MS);
+  private readonly http = inject(HttpClient);
 
-  listar(): Observable<Category[]> {
-    return defer(() => of(CATEGORIES.filter((c) => c.isActive))).pipe(delay(this.retardo));
+  /** GET /api/categories: la API responde directamente la lista de categorías activas. */
+  async listar(): Promise<Category[]> {
+    return firstValueFrom(this.http.get<Category[]>('/api/categories'));
   }
 }

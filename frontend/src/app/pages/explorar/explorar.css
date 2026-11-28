@@ -58,4 +58,6 @@
   .scene .bike, .scene .plant, .scene .camera { font-size: 52px; }
   .category { min-height: 48px; }
   .category .ico { font-size: 18px; }
+  .categories { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reasons { grid-template-columns: 1fr; }
 }

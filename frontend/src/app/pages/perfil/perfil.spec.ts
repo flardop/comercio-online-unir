@@ -1,8 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { NEVER, of, throwError } from 'rxjs';
 import { ARTICLES, CATEGORIES, USERS } from '../../core/mocks/datos-prueba';
 import { PublicProfile } from '../../core/models/public-profile';
 import { ArticuloService } from '../../core/services/articulo.service';
@@ -13,18 +12,25 @@ import { Perfil } from './perfil';
 const NEREA = USERS[2];
 const SUS_ARTICULOS = ARTICLES.filter((a) => a.ownerId === NEREA.id);
 
+/** Deja que terminen las promesas pendientes y repinta la pantalla. */
+async function esperar(harness: RouterTestingHarness): Promise<void> {
+  harness.detectChanges();
+  await new Promise((resolve) => setTimeout(resolve));
+  harness.detectChanges();
+}
+
 describe('Perfil público', () => {
   const obtenerUsuario = vi.fn();
   const listarPorVendedor = vi.fn();
   const listarCategorias = vi.fn();
 
   beforeEach(() => {
-    obtenerUsuario.mockReset().mockReturnValue(of(NEREA));
-    listarPorVendedor.mockReset().mockReturnValue(of(SUS_ARTICULOS));
-    listarCategorias.mockReset().mockReturnValue(of(CATEGORIES));
+    obtenerUsuario.mockReset().mockResolvedValue(NEREA);
+    listarPorVendedor.mockReset().mockResolvedValue(SUS_ARTICULOS);
+    listarCategorias.mockReset().mockResolvedValue(CATEGORIES);
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([{ path: 'perfiles/:id', component: Perfil }]),
+        provideRouter([{ path: 'perfiles/:id', component: Perfil }], withComponentInputBinding()),
         { provide: ArticuloService, useValue: { listarPorVendedor } },
         { provide: CategoriaService, useValue: { listar: listarCategorias } },
         { provide: UsuarioService, useValue: { obtener: obtenerUsuario } },
@@ -35,12 +41,12 @@ describe('Perfil público', () => {
   async function abrir(url = '/perfiles/3') {
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl(url, Perfil);
-    harness.detectChanges();
+    await esperar(harness);
     return { harness, raiz: harness.routeNativeElement as HTMLElement };
   }
 
   function con(cambios: Partial<PublicProfile>): void {
-    obtenerUsuario.mockReturnValue(of({ ...NEREA, ...cambios }));
+    obtenerUsuario.mockResolvedValue({ ...NEREA, ...cambios });
   }
 
   it('muestra los datos públicos del vendedor', async () => {
@@ -72,13 +78,13 @@ describe('Perfil público', () => {
   });
 
   it('pasa a la tarjeta el emoji de la categoría del artículo', async () => {
-    listarPorVendedor.mockReturnValue(of([{ ...SUS_ARTICULOS[0], images: [] }]));
+    listarPorVendedor.mockResolvedValue([{ ...SUS_ARTICULOS[0], images: [] }]);
     const { raiz } = await abrir();
     expect(raiz.querySelector('.cards .emojiFallback')?.textContent).toBe('🚲');
   });
 
   it('muestra las tarjetas aunque fallen las categorías', async () => {
-    listarCategorias.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    listarCategorias.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
     const { raiz } = await abrir();
     expect(raiz.querySelectorAll('app-articulo-card').length).toBe(1);
   });
@@ -102,13 +108,13 @@ describe('Perfil público', () => {
   });
 
   it('avisa si el vendedor no tiene artículos publicados', async () => {
-    listarPorVendedor.mockReturnValue(of([]));
+    listarPorVendedor.mockResolvedValue([]);
     const { raiz } = await abrir();
     expect(raiz.textContent).toContain('Este vendedor todavía no tiene artículos publicados.');
   });
 
   it('muestra el perfil con un error en la lista si fallan solo los artículos', async () => {
-    listarPorVendedor.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    listarPorVendedor.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
     const { raiz } = await abrir();
     expect(raiz.querySelector('h1')?.textContent).toContain('Nerea');
     expect(raiz.querySelector('[role="alert"]')?.textContent).toContain('No se han podido cargar sus artículos');
@@ -116,14 +122,14 @@ describe('Perfil público', () => {
   });
 
   it('muestra «Perfil no encontrado.» si la API responde 404', async () => {
-    obtenerUsuario.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 404 })));
+    obtenerUsuario.mockRejectedValue(new HttpErrorResponse({ status: 404 }));
     const { raiz } = await abrir('/perfiles/999');
     expect(raiz.querySelector('[role="alert"]')?.textContent).toContain('Perfil no encontrado.');
     expect(raiz.querySelector('h1')).toBeNull();
   });
 
   it('muestra un error genérico si falla el perfil', async () => {
-    obtenerUsuario.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    obtenerUsuario.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
     const { raiz } = await abrir();
     expect(raiz.querySelector('[role="alert"]')?.textContent).toContain(
       'No se ha podido cargar el perfil. Inténtalo de nuevo.',
@@ -131,7 +137,7 @@ describe('Perfil público', () => {
   });
 
   it('muestra el estado cargando mientras llega la respuesta', async () => {
-    obtenerUsuario.mockReturnValue(NEVER);
+    obtenerUsuario.mockReturnValue(new Promise(() => {}));
     const { raiz } = await abrir();
     expect(raiz.textContent).toContain('Cargando');
     expect(raiz.querySelector('h1')).toBeNull();
@@ -145,16 +151,29 @@ describe('Perfil público', () => {
   });
 
   it('se actualiza al cambiar el id y recupera la foto del nuevo vendedor', async () => {
-    obtenerUsuario.mockImplementation((id: number) =>
-      of({ ...(USERS.find((u) => u.id === id) as PublicProfile), avatarUrl: `https://example.test/${id}.jpg` }),
-    );
+    obtenerUsuario.mockImplementation(async (id: number) => ({
+      ...(USERS.find((u) => u.id === id) as PublicProfile),
+      avatarUrl: `https://example.test/${id}.jpg`,
+    }));
     const { harness, raiz } = await abrir();
     raiz.querySelector('.avatar img')?.dispatchEvent(new Event('error'));
     harness.detectChanges();
     await harness.navigateByUrl('/perfiles/1');
-    harness.detectChanges();
+    await esperar(harness);
     expect(raiz.querySelector('h1')?.textContent).toContain('Álex');
     expect(raiz.querySelector('.avatar img')?.getAttribute('src')).toBe('https://example.test/1.jpg');
     expect(listarPorVendedor).toHaveBeenLastCalledWith(1);
+  });
+
+  it('ignora una respuesta que llega tarde de un vendedor anterior', async () => {
+    let responderTarde: (u: PublicProfile) => void = () => {};
+    obtenerUsuario.mockReturnValueOnce(new Promise<PublicProfile>((resolve) => (responderTarde = resolve)));
+    obtenerUsuario.mockResolvedValue(USERS[0]);
+    const { harness } = await abrir('/perfiles/3');
+    await harness.navigateByUrl('/perfiles/1');
+    await esperar(harness);
+    responderTarde(NEREA);
+    await esperar(harness);
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain(USERS[0].name);
   });
 });

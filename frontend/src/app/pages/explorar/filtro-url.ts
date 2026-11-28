@@ -4,8 +4,6 @@ import { FILTER_CONDITIONS } from '../../core/util/etiquetas';
 
 export type ClaveFiltro = 'q' | 'categoryId' | 'maxPrice' | 'condition' | 'city';
 
-export const CLAVES_FILTRO: ClaveFiltro[] = ['q', 'categoryId', 'maxPrice', 'condition', 'city'];
-
 function numero(valor: string | null): number | undefined {
   if (valor === null || valor.trim() === '') return undefined;
   const n = Number(valor);

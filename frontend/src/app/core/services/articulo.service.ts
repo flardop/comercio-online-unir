@@ -1,44 +1,38 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, defer, delay, of, throwError } from 'rxjs';
-import { notFound } from '../mocks/errores';
-import { ARTICLES } from '../mocks/datos-prueba';
-import { filtrarArticulos } from '../mocks/filtrar-articulos';
+import { firstValueFrom } from 'rxjs';
 import { Article, ArticleFilter, ArticlePage } from '../models/article';
-import { MOCK_DELAY_MS } from './mock-delay';
 
-/**
- * Contrato: GET /articles y GET /articles/{articleId}.
- * GET /articles/{id} responde `{ article: Article }`; este servicio ya devuelve el artículo desenvuelto
- * (como UsuarioService con `{ user }`), así que al cambiar a HttpClient hay que hacer `map(r => r.article)`.
- * Hoy responde con datos de prueba; al conectar la API solo cambia el cuerpo de cada método por HttpClient.
- */
 @Injectable({ providedIn: 'root' })
 export class ArticuloService {
-  private readonly retardo = inject(MOCK_DELAY_MS);
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = '/api/articles';
 
-  listar(filtro: ArticleFilter = {}): Observable<ArticlePage> {
-    return defer(() => of(filtrarArticulos(ARTICLES, filtro))).pipe(delay(this.retardo));
+  /** GET /api/articles: devuelve los artículos y los datos de paginación. */
+  async listar(filtro: ArticleFilter = {}): Promise<ArticlePage> {
+    // Solo se envían los filtros que tienen valor.
+    const params: Record<string, string | number> = {};
+    for (const [clave, valor] of Object.entries(filtro)) {
+      if (valor !== undefined && valor !== '') {
+        params[clave] = valor;
+      }
+    }
+    return firstValueFrom(this.http.get<ArticlePage>(this.apiUrl, { params }));
   }
 
-  obtener(id: number): Observable<Article> {
-    return defer(() => {
-      const articulo = ARTICLES.find((a) => a.id === id && a.status === 'published');
-      return articulo ? of(articulo) : throwError(() => notFound('Artículo no encontrado'));
-    }).pipe(delay(this.retardo));
+  /** GET /api/articles/{id}: la API responde { article }. */
+  async obtener(id: number): Promise<Article> {
+    const respuesta = await firstValueFrom(this.http.get<{ article: Article }>(`${this.apiUrl}/${id}`));
+    return respuesta.article;
   }
 
   /**
-   * Artículos publicados de un vendedor, del más reciente al más antiguo.
-   * El contrato aún no define cómo pedirlos (GET /articles no filtra por vendedor y PublicProfile
-   * no trae artículos); cuando se acuerde, solo cambia el cuerpo de este método.
+   * Artículos publicados de un vendedor, en el orden que devuelve la API (los más recientes primero).
+   * 100 es el máximo que admite la API en una sola página.
    */
-  listarPorVendedor(ownerId: number): Observable<Article[]> {
-    return defer(() =>
-      of(
-        ARTICLES.filter((a) => a.ownerId === ownerId && a.status === 'published').sort((a, b) =>
-          b.createdAt.localeCompare(a.createdAt),
-        ),
-      ),
-    ).pipe(delay(this.retardo));
+  async listarPorVendedor(ownerId: number): Promise<Article[]> {
+    const params = { ownerId, sort: 'recent', pageSize: 100 };
+    const respuesta = await firstValueFrom(this.http.get<ArticlePage>(this.apiUrl, { params }));
+    return respuesta.data;
   }
 }

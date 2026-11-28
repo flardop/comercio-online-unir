@@ -21,9 +21,11 @@ export const FILTER_MAX_PRICES: number[] = [30, 100, 300];
 export const FILTER_CITIES: string[] = ['Valencia', 'Madrid', 'Barcelona', 'Bilbao', 'Zaragoza'];
 
 const CATEGORY_ICONS: Record<string, string> = {
-  Hogar: '⌂',
+  Hogar: '🏠',
   Moda: '👕',
   Tecnología: '▣',
+  Electrónica: '📱',
+  Ropa: '👕',
   Deporte: '⚽',
   Libros: '📚',
   Mascotas: '🐾',
@@ -33,6 +35,8 @@ const CATEGORY_EMOJIS: Record<string, string> = {
   Hogar: '🛋️',
   Moda: '🧥',
   Tecnología: '📷',
+  Electrónica: '📱',
+  Ropa: '🧥',
   Deporte: '🚲',
   Libros: '📚',
   Mascotas: '🐾',
